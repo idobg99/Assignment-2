@@ -1,5 +1,6 @@
 package bgu.spl.mics;
 
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -12,11 +13,15 @@ import java.util.concurrent.TimeUnit;
  */
 public class Future<T> {
 	
+	private volatile T result;
+	private final Semaphore sem;
+	
 	/**
 	 * This should be the the only public constructor in this class.
 	 */
 	public Future() {
-		//TODO: implement this
+		result = null;
+		sem = new Semaphore(2);
 	}
 	
 	/**
@@ -28,23 +33,34 @@ public class Future<T> {
      * 	       
      */
 	public T get() {
-		//TODO: implement this.
-		return null;
-	}
+		synchronized (this) {
+            while (result == null) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Restore interrupted status
+                }
+            }
+            return result;
+        }
+    }
 	
 	/**
      * Resolves the result of this Future object.
      */
-	public void resolve (T result) {
-		//TODO: implement this.
-	}
+	public synchronized void resolve (T result) {	 
+            if (this.result == null) {
+                this.result = result;
+                notifyAll();
+            }
+        }
+
 	
 	/**
      * @return true if this object has been resolved, false otherwise
      */
 	public boolean isDone() {
-		//TODO: implement this.
-		return false;
+		return result !=null; 
 	}
 	
 	/**
@@ -59,8 +75,23 @@ public class Future<T> {
      *         elapsed, return null.
      */
 	public T get(long timeout, TimeUnit unit) {
-		//TODO: implement this.
-		return null;
-	}
-
+		long timeoutMillis = unit.toMillis(timeout);
+        long startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - startTime < timeoutMillis) {
+            if (result != null) {
+                return result;
+            }
+			try {
+				if (sem.tryAcquire(timeoutMillis, unit)) {
+					return result;
+				}
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt(); // Restore interrupted status
+			}
+			return null;
+            
+        }
+        return null;
+    }
 }
+
