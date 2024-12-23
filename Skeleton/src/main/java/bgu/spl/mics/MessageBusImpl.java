@@ -14,7 +14,6 @@ public class MessageBusImpl implements MessageBus {
 	private static class Singleton {
         private static final MessageBusImpl INSTANCE = new MessageBusImpl();
     }
-
 	
 	private final ConcurrentHashMap<MicroService, BlockingQueue<Message>> microServiceQueues;
     private final ConcurrentHashMap<Class<? extends Event>, Queue<MicroService>> eventSubscribers;
@@ -22,21 +21,19 @@ public class MessageBusImpl implements MessageBus {
     private final ConcurrentHashMap<Event<?>, Future<?>> eventFutures;
     private final ReadWriteLock lock;
 
-
-	private MessageBusImpl(){
+	private MessageBusImpl(){   //private constructor for the singelton class
 		microServiceQueues = new ConcurrentHashMap<>();
 		eventSubscribers = new ConcurrentHashMap<>();
 		broadcastSubscribers = new ConcurrentHashMap<>();
 		eventFutures = new ConcurrentHashMap<>();
-		lock = new ReentrantReadWriteLock();
-	
-	}  //private constructor for the singelton class
+		lock = new ReentrantReadWriteLock();	
+	}  
 	public static MessageBusImpl getBusInstance() {
         return Singleton.INSTANCE;
     } 
 	
 	@Override
-	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
+	public <T> void subscribeEvent( Class<? extends Event<T>> type, MicroService m) {
 		lock.writeLock().lock();
         try {
             eventSubscribers.putIfAbsent(type, new ConcurrentLinkedQueue<>());
@@ -75,9 +72,24 @@ public class MessageBusImpl implements MessageBus {
     }
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		Queue<MicroService> subscribers = eventSubscribers.get(e.getClass());
+        if (subscribers == null || subscribers.isEmpty()) {
+            return null;
+        }
+        MicroService m;
+        synchronized (subscribers) {
+            m = subscribers.poll();
+            subscribers.offer(m); // Round-robin
+        }
+
+        if (m != null) {
+            Future<T> future = new Future<T>();
+            eventFutures.put(e, future);
+            microServiceQueues.get(m).offer(e);
+            return future;
+        }
+        return null;
+    }
 
 	@Override
 	public void register(MicroService m) {
@@ -98,10 +110,18 @@ public class MessageBusImpl implements MessageBus {
 	
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
+        BlockingQueue<Message> queue = microServiceQueues.get(m);
+        synchronized (queue) {
+            Message message = queue.take(); 
+            while (message == null) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Restore interrupted status
+                }
+            }
+            return message;
+        }		
 	}
-
-	
 
 }
