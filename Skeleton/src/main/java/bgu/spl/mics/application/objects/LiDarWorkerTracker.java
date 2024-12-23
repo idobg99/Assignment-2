@@ -19,6 +19,12 @@ public class LiDarWorkerTracker {
         this.lastTrackedObjects = new ArrayList<>();
     }
 
+    public void addObject(TrackedObject object){
+        synchronized(lastTrackedObjects){
+            lastTrackedObjects.add(object);
+        } 
+    }
+
     public int getId() {
         return id;
     }
