@@ -75,23 +75,15 @@ public class Future<T> {
      *         elapsed, return null.
      */
 	public T get(long timeout, TimeUnit unit) {
-		long timeoutMillis = unit.toMillis(timeout);
-        long startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - startTime < timeoutMillis) {
-            if (result != null) {
+		try {
+            if (sem.tryAcquire(timeout, unit)) {
                 return result;
             }
-			try {
-				if (sem.tryAcquire(timeoutMillis, unit)) {
-					return result;
-				}
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt(); // Restore interrupted status
-			}
-			return null;
-            
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupted status
         }
         return null;
+    }
     }
 }
 
