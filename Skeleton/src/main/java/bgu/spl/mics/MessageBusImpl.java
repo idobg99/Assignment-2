@@ -11,14 +11,14 @@ import java.util.concurrent.locks.*;
  * All other methods and members you add the class must be private.
  */
 public class MessageBusImpl implements MessageBus {
-	private static class Singleton {
-        private static final MessageBusImpl INSTANCE = new MessageBusImpl();
+	private static class SingletonHolder {
+        private static MessageBusImpl INSTANCE = new MessageBusImpl();
     }
 	
-	private final ConcurrentHashMap<MicroService, BlockingQueue<Message>> microServiceQueues;
-    private final ConcurrentHashMap<Class<? extends Event>, Queue<MicroService>> eventSubscribers;
-    private final ConcurrentHashMap<Class<? extends Broadcast>, CopyOnWriteArrayList<MicroService>> broadcastSubscribers;
-    private final ConcurrentHashMap<Event<?>, Future<?>> eventFutures;
+	private ConcurrentHashMap<MicroService, BlockingQueue<Message>> microServiceQueues;
+    private ConcurrentHashMap<Class<? extends Event>, Queue<MicroService>> eventSubscribers;
+    private ConcurrentHashMap<Class<? extends Broadcast>, CopyOnWriteArrayList<MicroService>> broadcastSubscribers;
+    private ConcurrentHashMap<Event<?>, Future<?>> eventFutures;
     private final ReadWriteLock lock;
 
 	private MessageBusImpl(){   //private constructor for the singelton class
@@ -29,7 +29,7 @@ public class MessageBusImpl implements MessageBus {
 		lock = new ReentrantReadWriteLock();	
 	}  
 	public static MessageBusImpl getBusInstance() {
-        return Singleton.INSTANCE;
+        return SingletonHolder.INSTANCE;
     } 
 	
 	@Override
