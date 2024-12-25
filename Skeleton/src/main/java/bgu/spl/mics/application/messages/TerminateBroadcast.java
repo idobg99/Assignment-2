@@ -6,5 +6,5 @@ import bgu.spl.mics.Broadcast;
  * A broadcast message to signal system shutdown.
  */
 public class TerminateBroadcast implements Broadcast {
-    
+    //nothing needed
 }
