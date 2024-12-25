@@ -29,7 +29,7 @@ public abstract class MicroService implements Runnable {
 
     // Ido added
     private final MessageBus messageBus;
-    private final ConcurrentHashMap<Class<? extends Message>, Callback<?>> callbacks;
+    private final ConcurrentHashMap<Class<? extends Message>, Callback<? extends Message>> callbacks;
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
@@ -163,36 +163,32 @@ public abstract class MicroService implements Runnable {
             // Step 1: Register with the MessageBus
             messageBus.register(this);
 
-            // Step 2: Perform initialization (subscribe to messages, etc.)
+            // Step 2: Perform initialization
             initialize();
 
-            // Step 3: Main message processing loop
+            // Step 3: Main processing loop
             while (!terminated) {
-                try {
-                    // Wait for the next message (blocking call)
-                    Message message = messageBus.awaitMessage(this);
+                // Wait for the next message (blocking call)
+                Message message = messageBus.awaitMessage(this);
 
-                    // Look up the appropriate callback for this message
-                    Callback callback = callbacks.get(message.getClass());
+                // Retrieve the appropriate callback
+                @SuppressWarnings("unchecked")
+                Callback<Message> callback = (Callback<Message>) callbacks.get(message.getClass());
 
-                    if (callback != null) {
-                        // Execute the callback
-                        callback.call(message);
-                    } else {
-                        // Handle case where no callback is registered (optional)
-                        System.err.println("No callback registered for message type: " + message.getClass().getSimpleName());
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // Restore interrupt status
+                if (callback != null) {
+                    // Execute the callback
+                    callback.call(message);
+                } else {
+                    System.err.println("No callback registered for message type: " + message.getClass().getSimpleName());
                 }
             }
-        } catch (Exception e) {
-            // Handle any unexpected exceptions
-            e.printStackTrace();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Preserve interrupt status
         } finally {
             // Step 4: Unregister from the MessageBus
             messageBus.unregister(this);
         }
     }
+
 
 }

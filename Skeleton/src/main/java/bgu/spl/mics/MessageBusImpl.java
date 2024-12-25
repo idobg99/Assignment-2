@@ -33,7 +33,7 @@ public class MessageBusImpl implements MessageBus {
     } 
 	
 	@Override
-	public <T> void subscribeEvent( Class<? extends Event<T>> type, MicroService m) {
+	public <T> void subscribeEvent( Class<? extends Event<T>> type, MicroService m) { // MAKE SURE THAT IS THREAD SAFE
 		lock.writeLock().lock();
         try {
             eventSubscribers.putIfAbsent(type, new ConcurrentLinkedQueue<>());
@@ -44,7 +44,7 @@ public class MessageBusImpl implements MessageBus {
     }	
 
 	@Override
-	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
+	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) { // MAKE SURE THAT IS THREAD SAFE
 		broadcastSubscribers.putIfAbsent(type, new CopyOnWriteArrayList<>());
         broadcastSubscribers.get(type).add(m);
     }
@@ -59,7 +59,7 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	@Override
-	public void sendBroadcast(Broadcast b) {
+	public void sendBroadcast(Broadcast b) { // MAKE SURE THAT IS THREAD SAFE
 		CopyOnWriteArrayList<MicroService> subscribers = broadcastSubscribers.get(b.getClass());
         if (subscribers != null) {
             for (MicroService m : subscribers) {
@@ -71,7 +71,7 @@ public class MessageBusImpl implements MessageBus {
         }
     }
 	@Override
-	public <T> Future<T> sendEvent(Event<T> e) {
+	public <T> Future<T> sendEvent(Event<T> e) { // MAKE SURE THAT IS THREAD SAFE
 		Queue<MicroService> subscribers = eventSubscribers.get(e.getClass());
         if (subscribers == null || subscribers.isEmpty()) {
             return null;
@@ -92,12 +92,12 @@ public class MessageBusImpl implements MessageBus {
     }
 
 	@Override
-	public void register(MicroService m) {
+	public void register(MicroService m) { // MAKE SURE THAT IS THREAD SAFE
 		microServiceQueues.putIfAbsent(m, new LinkedBlockingQueue<>());
     }
 
 	@Override
-	public void unregister(MicroService m) {
+	public void unregister(MicroService m) { // MAKE SURE THAT IS THREAD SAFE
 		lock.writeLock().lock();
         try {
             microServiceQueues.remove(m);
@@ -109,7 +109,7 @@ public class MessageBusImpl implements MessageBus {
     }
 	
 	@Override
-	public Message awaitMessage(MicroService m) throws InterruptedException {
+	public Message awaitMessage(MicroService m) throws InterruptedException { // MAKE SURE THAT IS THREAD SAFE
         BlockingQueue<Message> queue = microServiceQueues.get(m);
         synchronized (queue) {
             Message message = queue.take(); 
