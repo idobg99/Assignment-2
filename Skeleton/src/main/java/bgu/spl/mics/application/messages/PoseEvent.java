@@ -1,28 +1,28 @@
 package bgu.spl.mics.application.messages;
 
 import bgu.spl.mics.Event;
+import bgu.spl.mics.application.objects.CloudPoint;
 
 /**
- * Event representing the robot's pose (coordinates and orientation).
- * Sent by PoseService, handled by Fusion-SLAM.
+ * Event representing the robot's pose (position and orientation).
  */
 public class PoseEvent implements Event<Void> {
-    private final double x;
-    private final double y;
+    private final int time;      // Time of the pose
+    private final CloudPoint position; // Position of the robot
     private final double theta; // Orientation in degrees
 
-    public PoseEvent(double x, double y, double theta) {
-        this.x = x;
-        this.y = y;
+    public PoseEvent(int time, CloudPoint position, double theta) {
+        this.time = time;
+        this.position = position;
         this.theta = theta;
     }
 
-    public double getX() {
-        return x;
+    public int getTime() {
+        return time;
     }
 
-    public double getY() {
-        return y;
+    public CloudPoint getPosition() {
+        return position;
     }
 
     public double getTheta() {
@@ -31,6 +31,10 @@ public class PoseEvent implements Event<Void> {
 
     @Override
     public String toString() {
-        return "PoseEvent{" + "x=" + x + ", y=" + y + ", theta=" + theta + '}';
+        return "PoseEvent{" +
+                "time=" + time +
+                ", position=" + position +
+                ", theta=" + theta +
+                '}';
     }
 }
