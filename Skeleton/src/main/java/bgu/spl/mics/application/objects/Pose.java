@@ -10,7 +10,7 @@ public class Pose {
     private float yaw;
     private int time;
 
-    public Pose(float x, float y, float yaw, int time) {
+    public Pose(int time, float x, float y, float yaw) {
         this.x = x;
         this.y = y;
         this.yaw = yaw;

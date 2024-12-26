@@ -31,8 +31,5 @@ public class LiDarDataBase {
 
     public void addStampedCloudPoints(StampedCloudPoints newStamp){
         CloudPoints.add(newStamp);
-    }
-
-
-    
+    }    
 }

@@ -2,8 +2,6 @@ package bgu.spl.mics.application.objects;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
-import bgu.spl.mics.TrackedObjectsEvent;
-
 
 /**
  * LiDarWorkerTracker is responsible for managing a LiDAR worker.
