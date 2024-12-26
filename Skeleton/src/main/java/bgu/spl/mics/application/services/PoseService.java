@@ -1,7 +1,6 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.GPSIMU;
 
@@ -11,6 +10,7 @@ import bgu.spl.mics.application.objects.GPSIMU;
  */
 public class PoseService extends MicroService {
 
+    private GPSIMU gpsimu;
 
 
     /**
@@ -20,7 +20,7 @@ public class PoseService extends MicroService {
      */
     public PoseService(GPSIMU gpsimu) {
         super("PoseService");
-        // TODO Implement this
+        this.gpsimu = gpsimu;
     }
 
     /**
@@ -29,10 +29,4 @@ public class PoseService extends MicroService {
      */
     @Override
     protected void initialize() {
-        // Subscribe to TerminateBroadcast with a lambda exp for the callback CHECK CALLBACK
-        subscribeBroadcast(TickBroadcast.class, (TickBroadcast terminate) -> {
-            System.out.println(getName() + " received TerminateBroadcast. Terminating...");
-            terminate();
-        });
-    }
-}
+    }}
