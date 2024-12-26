@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.objects;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -12,10 +13,10 @@ public class StampedCloudPoints {
     private final int time;
     private List<List<Double>> cloudPoints;
 
-    public StampedCloudPoints(String id, int time, List<List<Double>> cloudPoints) {
+    public StampedCloudPoints(int time,String id, List<List<Double>> cloudPoints) {
         this.id = id;
         this.time = time;
-        this.cloudPoints = new ArrayList<>(cloudPoints);
+        this.cloudPoints = new CopyOnWriteArrayList<>(cloudPoints);
     }
 
     public String getId() {
