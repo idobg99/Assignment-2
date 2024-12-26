@@ -21,7 +21,7 @@ public class LiDarDataBase {
             TypeToken<List<StampedCloudPoints>> typeToken = new TypeToken<List<StampedCloudPoints>>() {};
             this.CloudPoints = gson.fromJson(reader, typeToken.getType());
         }
-        catch (Exception e) {};  //check if needed to do something 
+        catch (Exception e) {};  
 }
 
     //fields and static class for the singelton:
@@ -39,5 +39,13 @@ public class LiDarDataBase {
         SingletonHolder.filePath = filePath;
         return SingletonHolder.INSTANCE;
     }
+
+    public List<List<Double>> getStampedCloudPoints(int time){
+        return CloudPoints.get(time).getCloudPoints(); 
+
+    } 
+
+
+
   
 }
