@@ -2,11 +2,12 @@ package bgu.spl.mics.application.objects;
 
 /**
  * DetectedObject represents an object detected by the camera.
- * It contains information such as the object's ID and description.
+ * It contains information such as the object's ID, description, and detection time.
  */
 public class DetectedObject {
     private final String id;
     private final String description;
+    private int timestamp; // Time when the object was detected
 
     public DetectedObject(String id, String description) {
         this.id = id;
@@ -21,8 +22,16 @@ public class DetectedObject {
         return description;
     }
 
+    public int getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(int timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @Override
     public String toString() {
-        return "DetectedObject{id='" + id + "', description='" + description + "'}";
+        return "DetectedObject{id='" + id + "', description='" + description + "', timestamp=" + timestamp + "}";
     }
 }

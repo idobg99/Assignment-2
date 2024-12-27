@@ -1,51 +1,52 @@
 package bgu.spl.mics.application.objects;
 
-import java.util.*;
-import java.util.concurrent.locks.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a camera sensor on the robot.
  * Responsible for detecting objects in the environment.
  */
 public class Camera {
-    private int id;
-    private int frequency;
-    private STATUS status;
-    private List<StampedDetectedObjects> detectedObjectsList;
-    private final Lock lock; 
+    private final int id;  // Unique ID for the camera
+    private final int frequency;  // Detection frequency
+    private STATUS status;  // Status of the camera (e.g., UP or DOWN)
+    private final List<DetectedObject> detectedObjectsList;  // List of detected objects
 
     public Camera(int id, int frequency) {
         this.id = id;
         this.frequency = frequency;
         this.status = STATUS.UP;
         this.detectedObjectsList = new ArrayList<>();
-        this.lock = new ReentrantLock();
     }
 
-    
-    public void addDetectedObjects(int time, List<DetectedObject> detectedObjects) {
-        lock.lock();
-        try {
-            detectedObjectsList.add(new StampedDetectedObjects(time, detectedObjects));
-            StatisticalFolder.incrementDetectedObjects(detectedObjects.size());
-        } finally {
-            lock.unlock();
+    /**
+     * Adds detected objects and assigns the timestamp to each object.
+     *
+     * @param time            The time when objects were detected.
+     * @param detectedObjects The list of detected objects.
+     */
+    public void addDetectedObjects(int time, List<DetectedObject> detectedObjects) { //CHECK IF NECESARY TO MODIFY TIMESTAMP
+        for (DetectedObject obj : detectedObjects) {
+            obj.setTimestamp(time);
+            detectedObjectsList.add(obj);
         }
     }
 
-    public List<StampedDetectedObjects> getDetectedObjectsSince(int lastTick) {
-        lock.lock();
-        try {
-            List<StampedDetectedObjects> recentObjects = new ArrayList<>();
-            for (StampedDetectedObjects entry : detectedObjectsList) {
-                if (entry.getTime() >= lastTick) {
-                    recentObjects.add(entry);
-                }
+    /**
+     * Retrieves all detected objects for a specific tick.
+     *
+     * @param time The specific tick to retrieve detected objects for.
+     * @return A list of all detected objects at the given tick.
+     */
+    public List<DetectedObject> getDetectedObjectsAt(int time) {
+        List<DetectedObject> result = new ArrayList<>();
+        for (DetectedObject obj : detectedObjectsList) {
+            if (obj.getTimestamp() == time) {
+                result.add(obj);
             }
-            return recentObjects;
-        } finally {
-            lock.unlock();
         }
+        return result;
     }
 
     public int getId() {
@@ -57,32 +58,20 @@ public class Camera {
     }
 
     public STATUS getStatus() {
-        lock.lock();
-        try {
-            return status;
-        } finally {
-            lock.unlock();
-        }
+        return status;
     }
 
     public void setStatus(STATUS status) {
-        lock.lock();
-        try {
-            this.status = status;
-        } finally {
-            lock.unlock();
-        }
+        this.status = status;
     }
 
     @Override
     public String toString() {
-        lock.lock();
-        try {
-            return "Camera{id=" + id + ", frequency=" + frequency + ", status=" + status + ", detectedObjectsList=" + detectedObjectsList + "}";
-        } finally {
-            lock.unlock();
-        }
+        return "Camera{" +
+                "id=" + id +
+                ", frequency=" + frequency +
+                ", status=" + status +
+                ", detectedObjectsList=" + detectedObjectsList +
+                '}';
     }
 }
-
-
