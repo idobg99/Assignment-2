@@ -2,27 +2,50 @@ package bgu.spl.mics.application.objects;
 
 /**
  * Represents the robot's pose (position and orientation) in the environment.
- * Includes x, y coordinates and the yaw angle relative to a global coordinate system.
+ * Includes a CloudPoint for position (x, y) and yaw for orientation.
  */
 public class Pose {
-    private float x;
-    private float y;
-    private float yaw;
-    private int time;
+    private final CloudPoint position; // Reuses CloudPoint for x, y
+    private final float yaw; // Orientation in degrees or radians
+    private final int time; // Time the pose was recorded
 
-    public Pose(int time, float x, float y, float yaw) {
-        this.x = x;
-        this.y = y;
+    /**
+     * Constructs a Pose using a CloudPoint for position and a yaw angle.
+     *
+     * @param time       The timestamp of the pose.
+     * @param position   The CloudPoint representing the x, y position.
+     * @param yaw        The yaw angle (orientation).
+     */
+    public Pose(int time, CloudPoint position, float yaw) {
+        this.position = position;
         this.yaw = yaw;
         this.time = time;
     }
 
-    public float getX() {
-        return x;
+    /**
+     * Constructs a Pose using explicit x, y coordinates and yaw angle.
+     *
+     * @param time The timestamp of the pose.
+     * @param x    The x-coordinate of the pose.
+     * @param y    The y-coordinate of the pose.
+     * @param yaw  The yaw angle (orientation).
+     */
+    public Pose(int time, double x, double y, float yaw) {
+        this.position = new CloudPoint((int) x, (int) y);
+        this.yaw = yaw;
+        this.time = time;
     }
 
-    public float getY() {
-        return y;
+    public CloudPoint getPosition() {
+        return position;
+    }
+
+    public double getX() {
+        return position.getX();
+    }
+
+    public double getY() {
+        return position.getY();
     }
 
     public float getYaw() {
@@ -35,6 +58,10 @@ public class Pose {
 
     @Override
     public String toString() {
-        return "Pose{x=" + x + ", y=" + y + ", yaw=" + yaw + ", time=" + time + "}";
+        return "Pose{" +
+                "position=" + position +
+                ", yaw=" + yaw +
+                ", time=" + time +
+                '}';
     }
 }
