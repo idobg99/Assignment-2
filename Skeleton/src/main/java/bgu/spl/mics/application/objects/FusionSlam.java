@@ -77,6 +77,10 @@ public class FusionSlam {
         return previousPoses;
     }
 
+    public Pose getCurrentPose() {
+        return previousPoses.get(previousPoses.size() - 1);
+    }
+
     // Clear all poses
     public void clearPoses() {
         previousPoses.clear();

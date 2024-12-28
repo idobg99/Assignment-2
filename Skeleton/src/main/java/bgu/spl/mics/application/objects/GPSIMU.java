@@ -41,7 +41,7 @@ public class GPSIMU {
      * @param tick The tick for which the pose is requested.
      * @return The pose at the given tick, or null if no such pose exists.
      */
-    public Pose getPoseAtTick(int tick) {
+    public Pose getPoseAtTick(int tick) {  //COULD BE HASHMAP////////////////////////////
         for (Pose pose : poseList) {
             if (pose.getTime() == tick) {
                 return pose;
