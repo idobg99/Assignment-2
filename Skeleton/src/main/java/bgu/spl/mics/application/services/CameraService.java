@@ -5,8 +5,9 @@ import bgu.spl.mics.application.messages.DetectObjectsEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.Camera;
 import bgu.spl.mics.application.objects.DetectedObject;
+import bgu.spl.mics.application.objects.StampedDetectedObjects;
 
-import java.util.List;
+//import java.util.List;
 
 /**
  * CameraService processes data from the camera and
@@ -28,19 +29,30 @@ public class CameraService extends MicroService {
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast tick) -> {
             int currentTick = tick.getTick();
 
-            // Process detections only if the tick matches the camera's frequency
-            if (currentTick % camera.getFrequency() == 0 && currentTick > lastProcessedTick) { //CHECK IF MATCHES TO THE FREQUENCY TIME REQUEST OF THE ASSIGNMENT
-                List<DetectedObject> detectedObjects = camera.getDetectedObjectsAt(currentTick);
-                lastProcessedTick = currentTick;
+            // Ensure the service processes each tick only once
+            if (currentTick > lastProcessedTick) {
+                StampedDetectedObjects detectedObjects = camera.getDetectedObjectsAt(currentTick);
 
-                // Send a DetectObjectsEvent for each detected object
-                for (DetectedObject obj : detectedObjects) {
-                    sendEvent(new DetectObjectsEvent(obj.getId()));
+                // Process detected objects and send events
+                for (DetectedObject obj : detectedObjects.getDetectedObjects()) {
+                    sendEvent(new DetectObjectsEvent(obj.getId(),obj.getDescription()));
                     System.out.println(getName() + " sent DetectObjectsEvent for " + obj);
                 }
+
+                // Update last processed tick
+                lastProcessedTick = currentTick;
             }
         });
 
         System.out.println(getName() + " initialized.");
+    }
+
+    /**
+     * Retrieves the last processed tick for this service.
+     *
+     * @return The last processed tick.
+     */
+    public int getLastProcessedTick() {
+        return lastProcessedTick;
     }
 }

@@ -1,6 +1,6 @@
 package bgu.spl.mics.application.objects;
 
-import java.util.*;
+//import java.util.*;
 
 
 /**
@@ -10,15 +10,18 @@ import java.util.*;
  */
 public class TrackedObject {
     private final String id;
-    private final int time;
+    //private final int time;
     private final String description;
-    private List<CloudPoint> coordinates;
+    //private List<CloudPoint> coordinates;
+    private StampedCloudPoints coordinates;
 
-    public TrackedObject(String id, int time, String description, List<CloudPoint> coordinates) {
+    public TrackedObject(String id, String description, StampedCloudPoints coordinates) {
         this.id = id;
-        this.time = time;
+        //this.time = time;
         this.description = description;
-        this.coordinates = new ArrayList<>(coordinates);
+        this.coordinates = coordinates;
+        //this.coordinates = new ArrayList<>(coordinates);
+
     }
 
     public String getId() {
@@ -26,19 +29,19 @@ public class TrackedObject {
     }
 
     public int getTime() {
-        return time;
+        return coordinates.getTime();
     }
 
     public String getDescription() {
         return description;
     }
 
-    public List<CloudPoint> getCoordinates() {
-        return Collections.unmodifiableList(coordinates);
+    public StampedCloudPoints getCoordinates() {
+        return coordinates;
     }
 
     @Override
     public String toString() {
-        return "TrackedObject{id='" + id + "', time=" + time + ", description='" + description + "', coordinates=" + coordinates + "}";
+        return "TrackedObject{id='" + id + "', time=" + coordinates.getTime() + ", description='" + description + "', coordinates=" + coordinates + "}";
     }
 }

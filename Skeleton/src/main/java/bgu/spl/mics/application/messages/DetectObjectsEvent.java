@@ -7,12 +7,18 @@ import bgu.spl.mics.Event;
  */
 public class DetectObjectsEvent implements Event<String> {
     private final String objectId;
+    private final String description;
 
-    public DetectObjectsEvent(String objectId) {
+    public DetectObjectsEvent(String objectId, String description) {
         this.objectId = objectId;
+        this.description = description;
     }
 
     public String getObjectId() {
         return objectId;
+    }
+
+    public String getObjDescription() {
+        return description;
     }
 }

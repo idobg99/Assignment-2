@@ -16,7 +16,7 @@ public class FusionSlam {
     private static class FusionSlamHolder {
         private static FusionSlam INSTANCE = new FusionSlam();
     }
-    
+
 	private volatile LandMark[] landmarks;
     private volatile CopyOnWriteArrayList<Pose> previousPoses;
     private final ReadWriteLock lock;
@@ -25,7 +25,7 @@ public class FusionSlam {
 		landmarks = new LandMark[1000];
 		lock = new ReentrantReadWriteLock();	
         previousPoses = new CopyOnWriteArrayList<Pose>();
-	} 
+	}
 
 	public static FusionSlam getInstance() {
         return FusionSlamHolder.INSTANCE;

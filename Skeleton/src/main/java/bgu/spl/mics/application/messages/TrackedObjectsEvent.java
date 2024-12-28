@@ -1,42 +1,44 @@
 package bgu.spl.mics.application.messages;
 
 import bgu.spl.mics.Event;
-import bgu.spl.mics.application.objects.CloudPoint;
+//import bgu.spl.mics.application.objects.CloudPoint;
+import bgu.spl.mics.application.objects.StampedCloudPoints;
+import bgu.spl.mics.application.objects.TrackedObject;
 
-import java.util.List;
+//import java.util.List;
 
 /**
  * Event representing the tracking of objects detected by LiDAR.
  */
 public class TrackedObjectsEvent implements Event<Void> {
-    private final int time;                   // Time of detection
-    private final String id;                  // Object ID
-    private final List<CloudPoint> cloudPoints; // List of points representing the object
+    private final TrackedObject object;
 
-    public TrackedObjectsEvent(int time, String id, List<CloudPoint> cloudPoints) {
-        this.time = time;
-        this.id = id;
-        this.cloudPoints = cloudPoints;
+    public TrackedObjectsEvent(TrackedObject object) {
+        this.object = object;
     }
 
     public int getTime() {
-        return time;
+        return object.getTime();
     }
 
     public String getId() {
-        return id;
+        return object.getId();
     }
 
-    public List<CloudPoint> getCloudPoints() {
-        return cloudPoints;
+    public String getDescription() {
+        return object.getDescription();
+    }
+
+    public StampedCloudPoints getCloudPoints() {
+        return object.getCoordinates();
     }
 
     @Override
     public String toString() {
         return "TrackedObjectsEvent{" +
-                "time=" + time +
-                ", id='" + id + '\'' +
-                ", cloudPoints=" + cloudPoints +
+                "time=" + object.getTime() +
+                ", id='" + object.getId() + '\'' +
+                ", cloudPoints=" + object.getCoordinates() +
                 '}';
     }
 }

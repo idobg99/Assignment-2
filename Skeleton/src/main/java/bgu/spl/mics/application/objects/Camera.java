@@ -1,7 +1,9 @@
 package bgu.spl.mics.application.objects;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a camera sensor on the robot.
@@ -11,42 +13,38 @@ public class Camera {
     private final int id;  // Unique ID for the camera
     private final int frequency;  // Detection frequency
     private STATUS status;  // Status of the camera (e.g., UP or DOWN)
-    private final List<DetectedObject> detectedObjectsList;  // List of detected objects
+    private final  Map<Integer,StampedDetectedObjects> detectedObjectsMap;  // List of detected objects with availability times
 
     public Camera(int id, int frequency) {
         this.id = id;
         this.frequency = frequency;
         this.status = STATUS.UP;
-        this.detectedObjectsList = new ArrayList<>();
+        this.detectedObjectsMap = new HashMap<>();
     }
 
     /**
-     * Adds detected objects and assigns the timestamp to each object.
+     * Adds detected objects and calculates their availability time.
+     * Assumes input is StampedDetectedObjects built from the json.
+     * input is in batches - StampedDetectedObjects each time
      *
-     * @param time            The time when objects were detected.
+     * @param detectionTime   The time when the objects were detected.
      * @param detectedObjects The list of detected objects.
      */
-    public void addDetectedObjects(int time, List<DetectedObject> detectedObjects) { //CHECK IF NECESARY TO MODIFY TIMESTAMP
-        for (DetectedObject obj : detectedObjects) {
-            obj.setTimestamp(time);
-            detectedObjectsList.add(obj);
-        }
+    public void addDetectedObjects(StampedDetectedObjects detectedObjects) {
+        int time = detectedObjects.getTime();
+
+        // Add or replace the StampedDetectedObjects for the given time
+        detectedObjectsMap.put(time, detectedObjects);
     }
 
     /**
-     * Retrieves all detected objects for a specific tick.
+     * Retrieves all detected objects available at a specific tick.
      *
-     * @param time The specific tick to retrieve detected objects for.
-     * @return A list of all detected objects at the given tick.
+     * @param currentTime The specific tick to retrieve detected objects for.
+     * @return A list of all detected objects available at the given tick.
      */
-    public List<DetectedObject> getDetectedObjectsAt(int time) {
-        List<DetectedObject> result = new ArrayList<>();
-        for (DetectedObject obj : detectedObjectsList) {
-            if (obj.getTimestamp() == time) {
-                result.add(obj);
-            }
-        }
-        return result;
+    public StampedDetectedObjects getDetectedObjectsAt(int currentTime) {
+        return detectedObjectsMap.get(currentTime);
     }
 
     public int getId() {

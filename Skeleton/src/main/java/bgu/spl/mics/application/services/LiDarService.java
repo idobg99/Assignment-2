@@ -1,25 +1,26 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.DetectObjectsEvent;
+import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.objects.LiDarWorkerTracker;
+import bgu.spl.mics.application.messages.*;
 
 /**
  * LiDarService is responsible for processing data from the LiDAR sensor and
  * sending TrackedObjectsEvents to the FusionSLAM service.
- * 
- * This service interacts with the LiDarWorkerTracker object to retrieve and process
- * cloud point data and updates the system's StatisticalFolder upon sending its
- * observations.
  */
 public class LiDarService extends MicroService {
+    private final LiDarWorkerTracker lidarWorker;
 
     /**
      * Constructor for LiDarService.
      *
-     * @param LiDarWorkerTracker A LiDAR Tracker worker object that this service will use to process data.
+     * @param lidarWorker A LiDAR Worker Tracker object that this service will use to process data.
      */
-    public LiDarService(LiDarWorkerTracker LiDarWorkerTracker) {
-        super("Change_This_Name");
-        // TODO Implement this
+    public LiDarService(LiDarWorkerTracker lidarWorker) {
+        super("LiDarService-" + lidarWorker.getId());
+        this.lidarWorker = lidarWorker;
     }
 
     /**
@@ -29,6 +30,38 @@ public class LiDarService extends MicroService {
      */
     @Override
     protected void initialize() {
-        // TODO Implement this
+        // Subscribe to TickBroadcasts to synchronize with the system clock
+        subscribeBroadcast(TickBroadcast.class, (TickBroadcast tick) -> {
+            int currentTime = tick.getTick();
+            System.out.println(getName() + " received TickBroadcast: " + currentTime);
+
+            // Process any pending LiDAR operations if necessary
+            processLidarData(currentTime);
+        });
+
+        // Subscribe to DetectObjectsEvent
+        subscribeEvent(DetectObjectsEvent.class, (DetectObjectsEvent event) -> {
+            System.out.println(getName() + " received DetectObjectsEvent: " + event);
+
+            // Process the detection event and generate a response
+            TrackedObjectsEvent trackedObjects = lidarWorker.processDetectionEvent(event);
+
+            // Send the tracked objects to FusionSLAM or another service
+            sendEvent(trackedObjects);
+            System.out.println(getName() + " sent TrackedObjectsEvent: " + trackedObjects);
+        });
+
+        System.out.println(getName() + " initialized.");
+    }
+
+    /**
+     * Processes any LiDAR data at the given tick.
+     * This method is a placeholder for future logic.
+     *
+     * @param currentTime The current system tick.
+     */
+    private void processLidarData(int currentTime) {
+        // Placeholder: Add logic to process data from LiDAR at this time
+        System.out.println(getName() + " is processing LiDAR data for time: " + currentTime);
     }
 }

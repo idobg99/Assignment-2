@@ -29,7 +29,7 @@ public abstract class MicroService implements Runnable {
 
     // Ido added
     private final MessageBus messageBus;
-    private final ConcurrentHashMap<Class<? extends Message>, Callback<? extends Message>> callbacks;
+    private final ConcurrentHashMap<Class<? extends Message>, Callback<?>> callbacks;
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -

@@ -11,9 +11,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class StampedCloudPoints {
     private final String id;
     private final int time;
-    private List<List<Double>> cloudPoints;
+    private List<CloudPoint> cloudPoints;
 
-    public StampedCloudPoints(int time,String id, List<List<Double>> cloudPoints) {
+    public StampedCloudPoints(int time,String id, List<CloudPoint> cloudPoints) {
         this.id = id;
         this.time = time;
         this.cloudPoints = new CopyOnWriteArrayList<>(cloudPoints);
@@ -27,12 +27,12 @@ public class StampedCloudPoints {
         return time;
     }
 
-    public List<List<Double>> getCloudPoints() {
+    public List<CloudPoint> getCloudPoints() {
         return Collections.unmodifiableList(cloudPoints);
     }
 
     @Override
     public String toString() {
-        return "StampedCloudPoints{id='" + id + "', time=" + time + ", cloudPoints=" + cloudPoints + "}";
+        return "StampedCloudPoints{id=" + id + ", time=" + time + ", cloudPoints=" + cloudPoints + "}";
     }
 }
