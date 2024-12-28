@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class FusionSlamService extends MicroService {
     private final FusionSlam fusionSlam;
+    private Pose currentPose = null;
 
     /**
      * Constructor for FusionSlamService.
@@ -31,6 +32,7 @@ public class FusionSlamService extends MicroService {
     public FusionSlamService(FusionSlam fusionSlam) {
         super("FusionSlamService");
         this.fusionSlam = fusionSlam;
+        
     }
 
     /**
@@ -42,7 +44,7 @@ public class FusionSlamService extends MicroService {
     protected void initialize() {
         // Handle PoseEvent
         subscribeEvent(PoseEvent.class, poseEvent -> {
-            Pose currentPose = poseEvent.getPose();
+            currentPose = poseEvent.getPose();
             fusionSlam.addPose(currentPose);
             System.out.println(getName() + " updated pose: " + currentPose);
             complete(poseEvent, null);

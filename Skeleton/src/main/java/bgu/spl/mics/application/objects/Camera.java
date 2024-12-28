@@ -1,8 +1,8 @@
 package bgu.spl.mics.application.objects;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+//import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,7 +69,7 @@ public class Camera {
                 "id=" + id +
                 ", frequency=" + frequency +
                 ", status=" + status +
-                ", detectedObjectsList=" + detectedObjectsList +
+                ", detectedObjectsList=" + detectedObjectsMap +
                 '}';
     }
 }
