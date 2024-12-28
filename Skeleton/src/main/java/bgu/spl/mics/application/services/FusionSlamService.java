@@ -6,11 +6,13 @@ import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
 import bgu.spl.mics.application.messages.TerminatedBroadcast;
 import bgu.spl.mics.application.messages.CrashedBroadcast;
+import bgu.spl.mics.application.objects.CloudPoint;
 import bgu.spl.mics.application.objects.FusionSlam;
 import bgu.spl.mics.application.objects.Pose;
 import bgu.spl.mics.application.objects.TrackedObject;
 import bgu.spl.mics.application.objects.LandMark;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,6 +58,12 @@ public class FusionSlamService extends MicroService {
 
             for (TrackedObject trackedObject : trackedObjects) {
                 // INSERT CALCULATION FOR GLOBAL MAP//////////////////
+                List<CloudPoint> coordinares = new ArrayList<CloudPoint>();
+                for(CloudPoint tobj : trackedObject.getCoordinates()) {
+                    coordinares.add(new CloudPoint(tobj.getX() - currentPose.getX(), 
+                                                   tobj.getY() - currentPose.getY()));
+                }
+
                 LandMark newLandmark = new LandMark(trackedObject.getId(),
                                                     trackedObject.getDescription(),
                                                     trackedObject.getCoordinates());

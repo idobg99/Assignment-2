@@ -9,7 +9,7 @@ public class CloudPoint {
     private final double y;
     //private final double z;
 
-    public CloudPoint(int x, int y /*,int z*/) {
+    public CloudPoint(double x, double y /*,int z*/) {
         this.x = x;
         this.y = y;
         //this.z = z;
