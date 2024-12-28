@@ -1,44 +1,99 @@
-package bgu.spl.mics.application.messages;
+package bgu.spl.mics.application.services;
 
-import bgu.spl.mics.Event;
-//import bgu.spl.mics.application.objects.CloudPoint;
-import bgu.spl.mics.application.objects.StampedCloudPoints;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.DetectObjectsEvent;
+import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.messages.TrackedObjectsEvent;
+import bgu.spl.mics.application.objects.LiDarWorkerTracker;
+import bgu.spl.mics.application.objects.StampedDetectedObjects;
 import bgu.spl.mics.application.objects.TrackedObject;
 
-//import java.util.List;
-
 /**
- * Event representing the tracking of objects detected by LiDAR.
+ * LiDarService processes detected objects and sends TrackedObjectsEvents when the time is right.
  */
-public class TrackedObjectsEvent implements Event<Void> {
-    private final TrackedObject object;
+public class LiDarService extends MicroService {
+    private final LiDarWorkerTracker lidarWorker;
+    private int currentTime;
 
-    public TrackedObjectsEvent(TrackedObject object) {
-        this.object = object;
+    // List of pending tracked events with countdowns
+    private final List<Object[]> pendingTrackedEvents; // Each entry: {TrackedObjectsEvent, countdown}
+
+    /**
+     * Constructor for LiDarService.
+     *
+     * @param lidarWorker A LiDAR Worker Tracker object that this service will use to process data.
+     */
+    public LiDarService(LiDarWorkerTracker lidarWorker) {
+        super("LiDarService-" + lidarWorker.getId());
+        this.lidarWorker = lidarWorker;
+        this.currentTime = 0;
+        this.pendingTrackedEvents = new ArrayList<>();
     }
 
-    public int getTime() {
-        return object.getTime();
-    }
-
-    public String getId() {
-        return object.getId();
-    }
-
-    public String getDescription() {
-        return object.getDescription();
-    }
-
-    public StampedCloudPoints getCloudPoints() {
-        return object.getCoordinates();
-    }
-
+    /**
+     * Initializes the LiDarService.
+     */
     @Override
-    public String toString() {
-        return "TrackedObjectsEvent{" +
-                "time=" + object.getTime() +
-                ", id='" + object.getId() + '\'' +
-                ", cloudPoints=" + object.getCoordinates() +
-                '}';
+    protected void initialize() {
+        // Handle TickBroadcast to update time and process pending tracked events
+        subscribeBroadcast(TickBroadcast.class, tick -> {
+            currentTime = tick.getTick();
+
+            // Process pending tracked events
+            Iterator<Object[]> iterator = pendingTrackedEvents.iterator();
+            while (iterator.hasNext()) {
+                Object[] entry = iterator.next();
+                TrackedObjectsEvent trackedEvent = (TrackedObjectsEvent) entry[0];
+                int remainingTicks = (int) entry[1];
+
+                // Decrement countdown
+                remainingTicks--;
+
+                if (remainingTicks <= 0) {
+                    // Send the tracked objects event when countdown reaches zero
+                    sendEvent(trackedEvent);
+                    System.out.println(getName() + " sent TrackedObjectsEvent: " + trackedEvent);
+
+                    // Remove the processed event from the list
+                    iterator.remove();
+                } else {
+                    // Update the countdown
+                    entry[1] = remainingTicks;
+                }
+            }
+        });
+
+        // Handle DetectObjectsEvent
+        subscribeEvent(DetectObjectsEvent.class, event -> {
+            StampedDetectedObjects detectedObjects = event.getStampedDetectedObjects();
+
+            List<TrackedObject> trackedObjects = new ArrayList<>();
+            for (var obj : detectedObjects.getDetectedObjects()) {
+                TrackedObject trackedObject = lidarWorker.trackObject(
+                        currentTime,
+                        obj.getId(),
+                        obj.getDescription(),
+                        detectedObjects.getTime()
+                );
+
+                if (trackedObject != null) {
+                    trackedObjects.add(trackedObject);
+                } else {
+                    System.err.println(getName() + " failed to track object: " + obj.getId());
+                }
+            }
+
+            // Create a TrackedObjectsEvent and add it to pending tracked events
+            TrackedObjectsEvent trackedEvent = new TrackedObjectsEvent(currentTime, trackedObjects);
+            pendingTrackedEvents.add(new Object[]{trackedEvent, lidarWorker.getFrequency()});
+
+            System.out.println(getName() + " queued TrackedObjectsEvent: " + trackedEvent);
+        });
+
+        System.out.println(getName() + " initialized.");
     }
 }

@@ -4,10 +4,12 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.DetectObjectsEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.Camera;
-import bgu.spl.mics.application.objects.DetectedObject;
+//import bgu.spl.mics.application.objects.DetectedObject;
 import bgu.spl.mics.application.objects.StampedDetectedObjects;
 
-//import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * CameraService processes data from the camera and
@@ -17,10 +19,14 @@ public class CameraService extends MicroService {
     private final Camera camera;
     private int lastProcessedTick; // Tracks the last tick this service processed
 
+    // List to hold pending events with countdowns
+    private final List<Object[]> pendingEvents; // Each entry: {DetectObjectsEvent, countdown}
+
     public CameraService(Camera camera) {
         super("CameraService-" + camera.getId());
         this.camera = camera;
         this.lastProcessedTick = 0;
+        this.pendingEvents = new ArrayList<>();
     }
 
     @Override
@@ -29,14 +35,36 @@ public class CameraService extends MicroService {
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast tick) -> {
             int currentTick = tick.getTick();
 
-            // Ensure the service processes each tick only once
+            // Process pending events
+            Iterator<Object[]> iterator = pendingEvents.iterator();
+            while (iterator.hasNext()) {
+                Object[] entry = iterator.next();
+                //StampedDetectedObjects detectedObjects = (StampedDetectedObjects) entry[0];
+                int remainingTicks = (int) entry[1];
+
+                // Decrement countdown
+                remainingTicks--;
+
+                if (remainingTicks <= 0) {
+                    // Countdown reached 0; send events for the detected objects
+                    
+                    sendEvent((DetectObjectsEvent)entry[0]);
+                    
+                    iterator.remove(); // Remove the event from the list
+                } else {
+                    // Update countdown
+                    entry[1] = remainingTicks;
+                }
+            }
+
+            // Ensure the service processes new detections only once per tick
             if (currentTick > lastProcessedTick) {
                 StampedDetectedObjects detectedObjects = camera.getDetectedObjectsAt(currentTick);
 
-                // Process detected objects and send events
-                for (DetectedObject obj : detectedObjects.getDetectedObjects()) {
-                    sendEvent(new DetectObjectsEvent(obj.getId(),obj.getDescription()));
-                    System.out.println(getName() + " sent DetectObjectsEvent for " + obj);
+                if (detectedObjects != null) {
+                    // Add new detections to the list with their delay
+                    DetectObjectsEvent e = new DetectObjectsEvent(detectedObjects);
+                    pendingEvents.add(new Object[]{e, camera.getFrequency()});
                 }
 
                 // Update last processed tick

@@ -23,7 +23,7 @@ public class LiDarWorkerTracker {
         this.status = STATUS.UP;
         this.lastTrackedObjects = new ArrayList<>();
         this.lock = new ReentrantLock();
-        LiDarDataBase lidarDB = LiDarDataBase.getInstance();
+        //LiDarDataBase lidarDB = LiDarDataBase.getInstance();
     }
 
     public void addObject(TrackedObject object){
@@ -32,15 +32,22 @@ public class LiDarWorkerTracker {
         //} 
     }
 
-    public TrackedObject TrackObject(int time, String id, String description) { //ADD LOGIC FOR FREQUENCY
-        List<StampedCloudPoints> pointsList = lidarDB.getStampedCloudPoints(time);
+    public TrackedObject trackObject(int time, String id, String description) {
+        lock.lock();
+        try {
+            List<StampedCloudPoints> pointsList = lidarDB.getStampedCloudPoints(time);
 
-        for (StampedCloudPoints point : pointsList) {
-            if (point.getId() == id) { 
-                return new TrackedObject(id, description, point);
+            for (StampedCloudPoints point : pointsList) {
+                if (point.getId().equals(id)) {
+                    TrackedObject trackedObject = new TrackedObject(point, description);
+                    lastTrackedObjects.add(trackedObject);
+                    return trackedObject;
+                }
             }
+            return null;
+        } finally {
+            lock.unlock();
         }
-        return null;
     }
 
     public int getId() {

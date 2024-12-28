@@ -7,12 +7,12 @@ package bgu.spl.mics.application.objects;
 public class CloudPoint {
     private final double x;
     private final double y;
-    private final double z;
+    //private final double z;
 
-    public CloudPoint(int x, int y, int z) {
+    public CloudPoint(int x, int y /*,int z*/) {
         this.x = x;
         this.y = y;
-        this.z = z;
+        //this.z = z;
     }
 
     public double getX() {
@@ -23,7 +23,7 @@ public class CloudPoint {
         return y;
     }
 
-    public double getZ() {
+    /*public double getZ() {
         return z;
-    }
+    }*/
 }

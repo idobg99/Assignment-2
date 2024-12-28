@@ -28,11 +28,10 @@ public class Pose {
      * @param time The timestamp of the pose.
      * @param x    The x-coordinate of the pose.
      * @param y    The y-coordinate of the pose.
-     * @param z    The z-coordinate of the pose.
      * @param yaw  The yaw angle (orientation).
      */
-    public Pose(int time, double x, double y, double z, float yaw) {
-        this.position = new CloudPoint((int) x, (int) y, (int)z);
+    public Pose(int time, double x, double y, float yaw) {
+        this.position = new CloudPoint((int) x, (int) y);
         this.yaw = yaw;
         this.time = time;
     }
@@ -49,9 +48,9 @@ public class Pose {
         return position.getY();
     }
 
-    public double getZ() {
+    /*public double getZ() {
         return position.getZ();
-    }
+    }*/
 
     public float getYaw() {
         return yaw;
