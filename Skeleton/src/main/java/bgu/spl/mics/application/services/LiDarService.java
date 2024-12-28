@@ -11,6 +11,7 @@ import bgu.spl.mics.application.messages.TrackedObjectsEvent;
 import bgu.spl.mics.application.objects.DetectedObject;
 import bgu.spl.mics.application.objects.LiDarWorkerTracker;
 import bgu.spl.mics.application.objects.StampedDetectedObjects;
+import bgu.spl.mics.application.objects.StatisticalFolder;
 import bgu.spl.mics.application.objects.TrackedObject;
 
 /**
@@ -18,6 +19,7 @@ import bgu.spl.mics.application.objects.TrackedObject;
  */
 public class LiDarService extends MicroService {
     private final LiDarWorkerTracker lidarWorker;
+    private StatisticalFolder statfolder = StatisticalFolder.getInstance();
     //private int currentTime;
 
     // List of pending tracked events with countdowns
@@ -57,6 +59,9 @@ public class LiDarService extends MicroService {
                 if (remainingTicks <= 0) {
                     // Send the tracked objects event when countdown reaches zero
                     sendEvent(trackedEvent);
+
+                    // Update statistics
+                    statfolder.incrementDetectedObjects(((TrackedObjectsEvent)entry[0]).getTrackedObjects().size());
                     System.out.println(getName() + " sent TrackedObjectsEvent: " + trackedEvent);
 
                     // Remove the processed event from the list
@@ -88,10 +93,19 @@ public class LiDarService extends MicroService {
             }
 
             // Create a TrackedObjectsEvent and add it to pending tracked events
-            TrackedObjectsEvent trackedEvent = new TrackedObjectsEvent(event.getTime(), trackedObjects);
-            pendingTrackedEvents.add(new Object[]{trackedEvent, lidarWorker.getFrequency()});
+            //WHAT IS THE TIME NEEDED? THE DETECTION TIME OR THE TRACKING TIME
+            TrackedObjectsEvent trackedEvent = new TrackedObjectsEvent(event.getTime(), trackedObjects); 
+            if (lidarWorker.getFrequency() == 0){
+                sendEvent(trackedEvent);
 
-            System.out.println(getName() + " queued TrackedObjectsEvent: " + trackedEvent);
+                // Update statistics
+                statfolder.incrementDetectedObjects(trackedEvent.getTrackedObjects().size());
+                System.out.println(getName() + " sent TrackedObjectsEvent: " + trackedEvent);
+            }
+            else {
+                pendingTrackedEvents.add(new Object[]{trackedEvent, lidarWorker.getFrequency()});
+                //System.out.println(getName() + " queued TrackedObjectsEvent: " + trackedEvent);
+            }
         });
 
         System.out.println(getName() + " initialized.");

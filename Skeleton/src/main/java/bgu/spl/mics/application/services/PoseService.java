@@ -38,7 +38,7 @@ public class PoseService extends MicroService {
             Pose currentPose = gpsimu.getPoseAtTick(currentTick);
 
             if (currentPose != null) {
-                // Broadcast a PoseEvent with the current pose
+                // Send a PoseEvent with the current pose
                 sendEvent(new PoseEvent(currentPose));
                 System.out.println(getName() + " sent PoseEvent: " + currentPose);
             }

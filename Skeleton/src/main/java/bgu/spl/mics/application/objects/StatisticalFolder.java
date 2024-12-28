@@ -1,7 +1,6 @@
 package bgu.spl.mics.application.objects;
 
-import java.util.*;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Holds statistical information about the system's operation.
@@ -9,13 +8,26 @@ import java.util.concurrent.locks.*;
  * the number of objects detected and tracked, and the number of landmarks identified.
  */
 public class StatisticalFolder {
-    public static int systemRuntime = 0;
-    public static int numDetectedObjects = 0;
-    public static int numTrackedObjects = 0;
-    public static int numLandmarks = 0;
-    public static final ReentrantLock lock = new ReentrantLock();
+    private int systemRuntime = 0;
+    private int numDetectedObjects = 0;
+    private int numTrackedObjects = 0;
+    private int numLandmarks = 0;
+    private final ReentrantLock lock = new ReentrantLock();
 
-    public static void incrementRuntime() {
+    // Private constructor to prevent instantiation
+    private StatisticalFolder() {}
+
+    // Singleton holder
+    private static class SingletonHolder {
+        private static final StatisticalFolder INSTANCE = new StatisticalFolder();
+    }
+
+    // Method to get the singleton instance
+    public static StatisticalFolder getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    public void incrementRuntime() {
         lock.lock();
         try {
             systemRuntime++;
@@ -24,7 +36,7 @@ public class StatisticalFolder {
         }
     }
 
-    public static void incrementDetectedObjects(int count) {
+    public void incrementDetectedObjects(int count) {
         lock.lock();
         try {
             numDetectedObjects += count;
@@ -33,7 +45,7 @@ public class StatisticalFolder {
         }
     }
 
-    public static void incrementTrackedObjects(int count) {
+    public void incrementTrackedObjects(int count) {
         lock.lock();
         try {
             numTrackedObjects += count;
@@ -42,7 +54,7 @@ public class StatisticalFolder {
         }
     }
 
-    public static void incrementLandmarks() {
+    public void incrementLandmarks() {
         lock.lock();
         try {
             numLandmarks++;
@@ -51,4 +63,16 @@ public class StatisticalFolder {
         }
     }
 
+    public void printSummary() {
+        lock.lock();
+        try {
+            System.out.println("Simulation Summary:");
+            System.out.println("System Runtime: " + systemRuntime);
+            System.out.println("Detected Objects: " + numDetectedObjects);
+            System.out.println("Tracked Objects: " + numTrackedObjects);
+            System.out.println("Landmarks Identified: " + numLandmarks);
+        } finally {
+            lock.unlock();
+        }
+    }
 }

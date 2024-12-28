@@ -15,7 +15,7 @@ public class LiDarWorkerTracker {
     private STATUS status;
     private List<TrackedObject> lastTrackedObjects;
     private final ReentrantLock lock;
-    private LiDarDataBase lidarDB;
+    private LiDarDataBase lidarDB = LiDarDataBase.getInstance();
 
     public LiDarWorkerTracker(int id, int frequency) {
         this.id = id;

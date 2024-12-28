@@ -6,6 +6,7 @@ import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.Camera;
 //import bgu.spl.mics.application.objects.DetectedObject;
 import bgu.spl.mics.application.objects.StampedDetectedObjects;
+import bgu.spl.mics.application.objects.StatisticalFolder;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import java.util.List;
 public class CameraService extends MicroService {
     private final Camera camera;
     private int lastProcessedTick; // Tracks the last tick this service processed
+    private StatisticalFolder statfolder = StatisticalFolder.getInstance();
 
     // List to hold pending events with countdowns
     private final List<Object[]> pendingEvents; // Each entry: {DetectObjectsEvent, countdown}
@@ -47,8 +49,10 @@ public class CameraService extends MicroService {
 
                 if (remainingTicks <= 0) {
                     // Countdown reached 0; send events for the detected objects
-                    
                     sendEvent((DetectObjectsEvent)entry[0]);
+                    
+                    //increment the number of detected objects in statistics
+                    statfolder.incrementDetectedObjects(((DetectObjectsEvent)entry[0]).getDetectedObjects().size());
                     
                     iterator.remove(); // Remove the event from the list
                 } else {
@@ -64,7 +68,13 @@ public class CameraService extends MicroService {
                 if (detectedObjects != null) {
                     // Add new detections to the list with their delay
                     DetectObjectsEvent e = new DetectObjectsEvent(detectedObjects);
-                    pendingEvents.add(new Object[]{e, camera.getFrequency()});
+                    if (camera.getFrequency() == 0) {
+                        sendEvent(e);
+                        statfolder.incrementDetectedObjects(e.getDetectedObjects().size());
+                    }
+                    else {
+                        pendingEvents.add(new Object[]{e, camera.getFrequency()});
+                    }
                 }
 
                 // Update last processed tick
