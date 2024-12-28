@@ -4,6 +4,8 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.PoseEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
+import bgu.spl.mics.application.messages.TerminatedBroadcast;
+import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.objects.FusionSlam;
 import bgu.spl.mics.application.objects.Pose;
 import bgu.spl.mics.application.objects.TrackedObject;
@@ -33,7 +35,7 @@ public class FusionSlamService extends MicroService {
 
     /**
      * Initializes the FusionSlamService.
-     * Registers the service to handle TrackedObjectsEvents, PoseEvents, and TickBroadcasts,
+     * Registers the service to handle TrackedObjectsEvents, PoseEvents, and broadcasts,
      * and sets up callbacks for updating the global map.
      */
     @Override
@@ -43,6 +45,7 @@ public class FusionSlamService extends MicroService {
             Pose currentPose = poseEvent.getPose();
             fusionSlam.addPose(currentPose);
             System.out.println(getName() + " updated pose: " + currentPose);
+            complete(poseEvent, null);
         });
 
         // Handle TrackedObjectsEvent
@@ -50,20 +53,31 @@ public class FusionSlamService extends MicroService {
             List<TrackedObject> trackedObjects = trackedObjectsEvent.getTrackedObjects();
 
             for (TrackedObject trackedObject : trackedObjects) {
-                //CHECK FOR ALREADY DETECTED LANDMARKS
+                // INSERT CALCULATION FOR GLOBAL MAP//////////////////
                 LandMark newLandmark = new LandMark(trackedObject.getId(),
                                                     trackedObject.getDescription(),
                                                     trackedObject.getCoordinates());
-                int landmarkIndex = trackedObject.getId().hashCode() % 1000; // Example hashing logic for index
-                fusionSlam.insertLandmark(landmarkIndex, newLandmark);
+                fusionSlam.insertLandmark(newLandmark);
                 System.out.println(getName() + " added landmark: " + newLandmark);
             }
         });
 
         // Handle TickBroadcast
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
-            // Update system runtime in the StatisticalFolder or other periodic tasks
+            // Perform periodic updates or maintenance tasks
             System.out.println(getName() + " received tick: " + tickBroadcast.getTick());
+        });
+
+        // Handle TerminatedBroadcast
+        subscribeBroadcast(TerminatedBroadcast.class, terminatedBroadcast -> {
+            System.out.println(getName() + " received termination signal. Shutting down.");
+            terminate();
+        });
+
+        // Handle CrashedBroadcast
+        subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
+            System.err.println(getName() + " received crash notification: " + crashedBroadcast.getReason());
+            // Perform any cleanup or map adjustment due to crash
         });
 
         System.out.println(getName() + " initialized.");
