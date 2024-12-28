@@ -24,7 +24,6 @@ import java.util.List;
  */
 public class FusionSlamService extends MicroService {
     private final FusionSlam fusionSlam;
-    //private Pose currentPose = null;
 
     /**
      * Constructor for FusionSlamService.
@@ -34,7 +33,6 @@ public class FusionSlamService extends MicroService {
     public FusionSlamService(FusionSlam fusionSlam) {
         super("FusionSlamService");
         this.fusionSlam = fusionSlam;
-        
     }
 
     /**
@@ -57,26 +55,33 @@ public class FusionSlamService extends MicroService {
             List<TrackedObject> trackedObjects = trackedObjectsEvent.getTrackedObjects();
             Pose currentPose = fusionSlam.getCurrentPose();
 
+            if (currentPose == null) {
+                System.err.println(getName() + " cannot process tracked objects: no current pose available.");
+                complete(trackedObjectsEvent, null);
+                return;
+            }
+
             for (TrackedObject trackedObject : trackedObjects) {
-
                 // Calculating the global coordinates
-                List<CloudPoint> coordinares = new ArrayList<CloudPoint>();
+                List<CloudPoint> coordinates = new ArrayList<>();
 
-                for(CloudPoint tobj : trackedObject.getCoordinates()) {
-                    double xGlobal = currentPose.getX() + (tobj.getX() * Math.cos(currentPose.getYaw()) - 
-                                                                    tobj.getY() * Math.sin(currentPose.getYaw()));
-                    double yGlobal = currentPose.getY() + (tobj.getX() * Math.sin(currentPose.getYaw()) + 
-                                                                    tobj.getY() * Math.cos(currentPose.getYaw()));
-                    coordinares.add(new CloudPoint(xGlobal, yGlobal));
+                for (CloudPoint tobj : trackedObject.getCoordinates()) {
+                    double xGlobal = currentPose.getX() + (tobj.getX() * Math.cos(currentPose.getYaw()) -
+                                                            tobj.getY() * Math.sin(currentPose.getYaw()));
+                    double yGlobal = currentPose.getY() + (tobj.getX() * Math.sin(currentPose.getYaw()) +
+                                                            tobj.getY() * Math.cos(currentPose.getYaw()));
+                    coordinates.add(new CloudPoint(xGlobal, yGlobal));
                 }
 
                 LandMark newLandmark = new LandMark(trackedObject.getId(),
                                                     trackedObject.getDescription(),
-                                                    coordinares);
+                                                    coordinates);
                 fusionSlam.insertLandmark(newLandmark);
                 System.out.println(getName() + " added landmark: " + newLandmark);
-                complete(trackedObjectsEvent, null);
             }
+
+            // Complete the event
+            complete(trackedObjectsEvent, null);
         });
 
         // Handle TickBroadcast
