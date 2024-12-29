@@ -10,7 +10,7 @@ public class DetectedObject {
     private final String description;
     //private final List<CloudPoint> pointCloud;
 
-    public DetectedObject(String id, String description, List<CloudPoint> pointCloud) {
+    public DetectedObject(String id, String description) {
         this.id = id;
         this.description = description;
         //this.pointCloud = pointCloud;

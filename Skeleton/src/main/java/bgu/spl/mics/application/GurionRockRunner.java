@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+
 
 
 import com.google.gson.Gson;
@@ -23,6 +23,7 @@ import bgu.spl.mics.application.objects.LiDarDataBase;
 // import java.lang.reflect.Type;
 // import java.util.List;
 import bgu.spl.mics.application.objects.LiDarWorkerTracker;
+import bgu.spl.mics.application.objects.StampedDetectedObjects;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,37 +56,54 @@ public class GurionRockRunner {
         String lidar_data = "path";
         String pose_data = "path";
 
-        // Initializing the GPSIMU
-        GPSIMU gps = GPSIMU.getInstance();
-        gps.Update(pose_data);
+        // // Initializing the GPSIMU
+        // GPSIMU gps = GPSIMU.getInstance();
+        // gps.Update(pose_data);
 
         // Initializing the LiDAR DB
-        LiDarDataBase lidarDB = LiDarDataBase.getInstance();
-        lidarDB.insertWithFile(lidar_data);
+        // LiDarDataBase lidarDB = LiDarDataBase.getInstance();
+        // lidarDB.insertWithFile(lidar_data);
 
-        // Initialize the Cameras and LiDAR detectors
-        try {
-            Gson gson = new Gson();
-            FileReader reader = new FileReader(config_file);
-            Map<String, Object> config = gson.fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
-        }
-        catch(Exception e) {
-            System.out.println("Falied to load the system - error: {" + e + "}");
-        }
+        // // Initialize the Cameras and LiDAR detectors
+        // try {
+        //     Gson gson = new Gson();
+        //     FileReader reader = new FileReader(config_file);
+        //     Map<String, Object> config = gson.fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
+        // }
+        // catch(Exception e) {
+        //     System.out.println("Falied to load the system - error: {" + e + "}");
+        // }
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(new File("config.json"));
+            JsonNode rootNode = mapper.readTree(new File(config_file));
 
-            // Parse Cameras
-            List<Camera> cameras = new ArrayList<>();
+            // initializing Poses:
+            GPSIMU gps = GPSIMU.getInstance();
+            String PoseDataPath = rootNode.path("poseJsonFile").asText(); 
+            gps.Update(PoseDataPath);
+
+            // Initializing the LiDAR DB:   
+            String LidarDataPath = rootNode.path("LiDarWorkers").path("lidars_data_path").asText();
+            LiDarDataBase lidarDataBase = LiDarDataBase.getInstance(LidarDataPath);
+            lidarDataBase.insertWithFile(LidarDataPath);          
+
+            // Parse Cameras:
+            List<Camera> camerasList = new ArrayList<>();
             JsonNode cameraConfig = rootNode.path("Cameras").path("CamerasConfigurations");
+            String cameraDataPath = rootNode.path("Cameras").path("camera_datas_path").asText();
+            JsonNode cameraData = mapper.readTree(new File(cameraDataPath));
+
             for (JsonNode config : cameraConfig) {
                 int id = config.get("id").asInt();
                 int frequency = config.get("frequency").asInt();
-                cameras.add(new Camera(id, frequency));
-            }
-
+                String cameraKey = config.get("camera_key").asText();
+                JsonNode detectedData = cameraData.path(cameraKey);
+                Camera camera = new Camera(id, frequency,detectedData);
+                camerasList.add(camera);
+            } 
+            
+            
         // Parse LiDar Workers
             List<LiDarWorkerTracker> lidarWorkers = new ArrayList<>();
             JsonNode lidarConfigs = rootNode.path("LiDarWorkers").path("LidarConfigurations");

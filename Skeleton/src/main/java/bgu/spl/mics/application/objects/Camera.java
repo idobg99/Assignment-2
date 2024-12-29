@@ -1,9 +1,13 @@
 package bgu.spl.mics.application.objects;
 
+import java.util.ArrayList;
 //import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 //import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Represents a camera sensor on the robot.
@@ -15,11 +19,11 @@ public class Camera {
     private STATUS status;  // Status of the camera (e.g., UP or DOWN)
     private final  Map<Integer,StampedDetectedObjects> detectedObjectsMap;  // List of detected objects with availability times
 
-    public Camera(int id, int frequency) {
+    public Camera(int id, int frequency,JsonNode detectedData ) {
         this.id = id;
         this.frequency = frequency;
         this.status = STATUS.UP;
-        this.detectedObjectsMap = new HashMap<>();
+        this.detectedObjectsMap = parseDetectedObjects(detectedData);
     }
 
     /**
@@ -35,6 +39,21 @@ public class Camera {
 
         // Add or replace the StampedDetectedObjects for the given time
         detectedObjectsMap.put(time, detectedObjects);
+    }
+
+    public Map<Integer, StampedDetectedObjects> parseDetectedObjects(JsonNode detectedData) {
+        Map<Integer, StampedDetectedObjects> map = new HashMap<>();
+        for (JsonNode entry : detectedData) {
+            int time = entry.get("time").asInt();
+            List<DetectedObject> objects = new ArrayList<>();
+            for (JsonNode obj : entry.get("detectedObjects")) {
+                String id = obj.get("id").asText();
+                String description = obj.get("description").asText();
+                objects.add(new DetectedObject(id, description));
+            }
+            map.put(time, new StampedDetectedObjects(time, objects));
+        }
+        return map;
     }
 
     /**
