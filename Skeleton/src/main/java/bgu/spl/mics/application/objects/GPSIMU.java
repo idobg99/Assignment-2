@@ -2,7 +2,7 @@ package bgu.spl.mics.application.objects;
 
 import java.io.FileReader;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -14,13 +14,17 @@ import com.google.gson.reflect.TypeToken;
 public class GPSIMU {
     private volatile int currentTick; // Current tick of the robot
     private volatile STATUS status; // Status of the GPS/IMU system
-    private final CopyOnWriteArrayList<Pose> poseList; // List of all poses sorted by time
+    private final ConcurrentHashMap<Integer, Pose> poseMap; // Map of poses indexed by tick
 
-    public GPSIMU(String poseDataFilePath) {
+    private GPSIMU() {
         this.currentTick = 0;
         this.status = STATUS.UP;
-        this.poseList = new CopyOnWriteArrayList<>();
+        this.poseMap = new ConcurrentHashMap<>();
 
+        
+    }
+
+    public Boolean Update(String poseDataFilePath) {
         try {
             // Parse the JSON file to load pose data
             Gson gson = new Gson();
@@ -28,10 +32,14 @@ public class GPSIMU {
             TypeToken<List<Pose>> typeToken = new TypeToken<List<Pose>>() {};
             List<Pose> loadedPoses = gson.fromJson(reader, typeToken.getType());
             if (loadedPoses != null) {
-                this.poseList.addAll(loadedPoses);
+                for (Pose pose : loadedPoses) {
+                    this.poseMap.put(pose.getTime(), pose);
+                }
             }
+            return true;
         } catch (Exception e) {
             System.err.println("Failed to load pose data from file: " + e.getMessage());
+            return false;
         }
     }
 
@@ -41,13 +49,8 @@ public class GPSIMU {
      * @param tick The tick for which the pose is requested.
      * @return The pose at the given tick, or null if no such pose exists.
      */
-    public Pose getPoseAtTick(int tick) {  //COULD BE HASHMAP////////////////////////////
-        for (Pose pose : poseList) {
-            if (pose.getTime() == tick) {
-                return pose;
-            }
-        }
-        return null; // Return null if no pose matches the given tick
+    public Pose getPoseAtTick(int tick) {
+        return poseMap.get(tick); // Efficient lookup using the map
     }
 
     /**
@@ -81,7 +84,23 @@ public class GPSIMU {
         return "GPSIMU{" +
                 "currentTick=" + currentTick +
                 ", status=" + status +
-                ", poseList=" + poseList +
+                ", poseMap=" + poseMap +
                 '}';
+    }
+
+    // Singleton instance holder
+    private static class SingletonHolder {
+        private static GPSIMU INSTANCE;
+
+        private static void initialize() {
+            if (INSTANCE == null) {
+                INSTANCE = new GPSIMU();
+            }
+        }
+    }
+
+    public static GPSIMU getInstance() {
+        SingletonHolder.initialize();
+        return SingletonHolder.INSTANCE;
     }
 }
