@@ -1,5 +1,5 @@
 package bgu.spl.mics.application.objects;
-import java.util.Map;
+//import java.util.Map;
 
 public class Config {
     CamerasConfig cameras;
