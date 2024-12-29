@@ -50,8 +50,8 @@ public class TimeService extends MicroService {
                     // Increment time in statistics
                     statfolder.incrementRuntime();
 
-                    // Wait tick time specified
-                    Thread.sleep(tickTime);
+                    // Wait tick time specified - tickTime is in seconds
+                    Thread.sleep(tickTime*1000);
                 }
 
                 // Send a TerminateBroadcast after all ticks
