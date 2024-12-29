@@ -9,22 +9,24 @@ import java.util.*;
  * time of tracking, and coordinates in the environment.
  */
 public class TrackedObject {
-    private final StampedCloudPoints object;
-    private final String description; // ??
+    private final String id;
+    private final int time;
+    private final String description;
+    private List<CloudPoint> coordinates;
 
-
-    public TrackedObject(StampedCloudPoints object, String description) {
-
+    public TrackedObject(String id, int time, String description, List<CloudPoint> coordinates) {
+        this.id = id;
+        this.time = time;
         this.description = description;
-        this.object = object;
+        this.coordinates = new ArrayList<>(coordinates);
     }
 
     public String getId() {
-        return object.getId();
+        return id;
     }
 
     public int getTime() {
-        return object.getTime();
+        return time;
     }
 
     public String getDescription() {
@@ -32,11 +34,11 @@ public class TrackedObject {
     }
 
     public List<CloudPoint> getCoordinates() {
-        return Collections.unmodifiableList(object.getCloudPoints());
+        return Collections.unmodifiableList(coordinates);
     }
 
     @Override
     public String toString() {
-        return "TrackedObject{object(StampedCloudPoints)='" +object + ", description='" + description + "}";
+        return "TrackedObject{id='" + id + "', time=" + time + ", description='" + description + "', coordinates=" + coordinates + "}";
     }
 }

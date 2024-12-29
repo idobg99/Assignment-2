@@ -1,11 +1,18 @@
 package bgu.spl.mics.application;
 
+import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import bgu.spl.mics.application.objects.Camera;
 import bgu.spl.mics.application.objects.GPSIMU;
 import bgu.spl.mics.application.objects.LiDarDataBase;
 // import bgu.spl.mics.application.services.LiDarService;
@@ -15,6 +22,12 @@ import bgu.spl.mics.application.objects.LiDarDataBase;
 // import java.io.IOException;
 // import java.lang.reflect.Type;
 // import java.util.List;
+import bgu.spl.mics.application.objects.LiDarWorkerTracker;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
 
 
 /**
@@ -58,6 +71,31 @@ public class GurionRockRunner {
         }
         catch(Exception e) {
             System.out.println("Falied to load the system - error: {" + e + "}");
+        }
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(new File("config.json"));
+
+            // Parse Cameras
+            List<Camera> cameras = new ArrayList<>();
+            JsonNode cameraConfig = rootNode.path("Cameras").path("CamerasConfigurations");
+            for (JsonNode config : cameraConfig) {
+                int id = config.get("id").asInt();
+                int frequency = config.get("frequency").asInt();
+                cameras.add(new Camera(id, frequency));
+            }
+
+        // Parse LiDar Workers
+            List<LiDarWorkerTracker> lidarWorkers = new ArrayList<>();
+            JsonNode lidarConfigs = rootNode.path("LiDarWorkers").path("LidarConfigurations");
+            for (JsonNode config : lidarConfigs) {
+                int id = config.get("id").asInt();
+                int frequency = config.get("frequency").asInt();
+                lidarWorkers.add(new LiDarWorkerTracker(id, frequency));
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading JSON file: " + e.getMessage());
         }
         
         
