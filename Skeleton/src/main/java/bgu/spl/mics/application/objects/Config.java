@@ -1,21 +1,21 @@
 package bgu.spl.mics.application.objects;
 
 public class Config {
-    CamerasConfig cameras;
-    LidarsConfig lidars;
+    CamerasConfig Cameras;
+    LidarsConfig Lidars;
     String poseJsonFile;
-    int tickTime;
-    int duration;
+    int TickTime;
+    int Duration;
 
     public Config() {
     }
 
     public CamerasConfig getCamerasConfig() {
-        return cameras;
+        return Cameras;
     }
 
     public LidarsConfig getLidarsConfig() {
-        return lidars;
+        return Lidars;
     }
 
     public String getPoseJson(){
@@ -23,10 +23,10 @@ public class Config {
     }
 
     public int getTickTime() {
-        return tickTime;
+        return TickTime;
     }
 
     public int getDuration() {
-        return duration;
+        return Duration;
     }
 }
