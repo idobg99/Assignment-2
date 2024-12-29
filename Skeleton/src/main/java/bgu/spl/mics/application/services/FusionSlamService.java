@@ -66,10 +66,10 @@ public class FusionSlamService extends MicroService {
                 List<CloudPoint> coordinates = new ArrayList<>();
 
                 for (CloudPoint tobj : trackedObject.getCoordinates()) {
-                    double xGlobal = currentPose.getX() + (tobj.getX() * Math.cos(currentPose.getYaw()) -
-                                                            tobj.getY() * Math.sin(currentPose.getYaw()));
-                    double yGlobal = currentPose.getY() + (tobj.getX() * Math.sin(currentPose.getYaw()) +
-                                                            tobj.getY() * Math.cos(currentPose.getYaw()));
+                    double xGlobal = currentPose.getX() + (tobj.getX() * Math.cos(Math.toRadians(currentPose.getYaw())) -
+                                                           tobj.getY() * Math.sin(Math.toRadians(currentPose.getYaw())));
+                    double yGlobal = currentPose.getY() + (tobj.getX() * Math.sin(Math.toRadians(currentPose.getYaw())) +
+                                                           tobj.getY() * Math.cos(Math.toRadians(currentPose.getYaw())));
                     coordinates.add(new CloudPoint(xGlobal, yGlobal));
                 }
 
