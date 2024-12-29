@@ -49,7 +49,7 @@ public class FusionSlam {
         }
     }
 
-    // Get a specific landmark bucket by index
+    // Get a specific landmark by index
     public LandMark getLandmark(int index) {
         lock.readLock().lock();
         try {
@@ -59,30 +59,58 @@ public class FusionSlam {
         }
     }
 
-    // Get all landmarks (returns a copy of all buckets)
+    // Get all landmarks 
     public LandMark[] getAllLandmarks() {
+        List<LandMark> snapshot;
         lock.readLock().lock();
-        LandMark[] lmark = landmarks.toArray(new LandMark[0]);
-        lock.readLock().unlock();
-        return lmark;
+        try {
+            snapshot = new ArrayList<>(landmarks); //copy
+        } finally {
+            lock.readLock().unlock();
+        }
+        return snapshot.toArray(new LandMark[0]); // Convert to array
     }
 
     // Add a new pose to the previousPoses list
     public void addPose(Pose pose) {
-        previousPoses.add(pose);
+        lock.writeLock().lock();
+        try {
+            previousPoses.add(pose);
+        }
+        finally {
+            lock.writeLock().unlock();
+        }
     }
 
-    // Get the list of all previous poses (returns an immutable copy)
+    // Get the list of all previous poses
     public List<Pose> getPreviousPoses() {
-        return previousPoses;
+        lock.readLock().lock();
+        try{
+            return new ArrayList<>(previousPoses);
+        }
+        finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Pose getCurrentPose() {
-        return previousPoses.get(previousPoses.size() - 1);
+        lock.readLock().lock();
+        try {
+            return previousPoses.get(previousPoses.size() - 1);
+        }
+        finally {
+            lock.readLock().unlock();
+        }
     }
 
     // Clear all poses
     public void clearPoses() {
-        previousPoses.clear();
+        lock.writeLock().lock();
+        try {
+            previousPoses.clear();
+        }
+        finally {
+            lock.writeLock().unlock();
+        }
     }
 }
