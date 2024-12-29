@@ -1,5 +1,22 @@
 package bgu.spl.mics.application;
 
+import java.io.FileReader;
+import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import bgu.spl.mics.application.objects.GPSIMU;
+import bgu.spl.mics.application.objects.LiDarDataBase;
+// import bgu.spl.mics.application.services.LiDarService;
+// import com.google.gson.Gson;
+// import com.google.gson.reflect.TypeToken;
+// import java.io.FileReader;
+// import java.io.IOException;
+// import java.lang.reflect.Type;
+// import java.util.List;
+
+
 /**
  * The main entry point for the GurionRock Pro Max Ultra Over 9000 simulation.
  * <p>
@@ -19,8 +36,37 @@ public class GurionRockRunner {
     public static void main(String[] args) {
         System.out.println("Hello World!");
 
-        // TODO: Parse configuration file.
-        // TODO: Initialize system components and services.
+        // Parse configuration file
+        String config_file = "/workspaces/Assignment-2/Skeleton/example_input_2/configuration_file.json";
+        String camera_data = "path";
+        String lidar_data = "path";
+        String pose_data = "path";
+
+        // Initializing the GPSIMU
+        GPSIMU gps = GPSIMU.getInstance();
+        gps.Update(pose_data);
+
+        // Initializing the LiDAR DB
+        LiDarDataBase lidarDB = LiDarDataBase.getInstance();
+        lidarDB.insertWithFile(lidar_data);
+
+        // Initialize the Cameras and LiDAR detectors
+        try {
+            Gson gson = new Gson();
+            FileReader reader = new FileReader(config_file);
+            Map<String, Object> configObjects = gson.fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
+            
+            // Create List of cameras from config file
+            for (Map<String,Object> camera : ) {
+
+            }
+        }
+        catch(Exception e) {
+            System.out.println("Falied to load the system - error: {" + e + "}");
+        }
+        
+        
+        //TODO: initialize services and components
         // TODO: Start the simulation.
     }
 }
