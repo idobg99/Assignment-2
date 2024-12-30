@@ -28,4 +28,8 @@ public class LandMark {
     public List<CloudPoint> getCoordinates() {
         return Collections.unmodifiableList(coordinates);
     }
+
+    public String toString (){
+        return id +" "+description +" "+ coordinates.toString();  
+    }
 }

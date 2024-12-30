@@ -9,12 +9,11 @@ import java.util.*;
  * time of tracking, and coordinates in the environment.
  */
 public class TrackedObject {
-    private final StampedCloudPoints object;
+    
     private final String description; // ??
-
-
+    private final StampedCloudPoints object;
+    
     public TrackedObject(StampedCloudPoints object, String description) {
-
         this.description = description;
         this.object = object;
     }

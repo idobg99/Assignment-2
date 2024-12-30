@@ -97,11 +97,14 @@ public class FusionSlamService extends MicroService {
         });
 
         // Handle CrashedBroadcast
-        subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
+        subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {         
             System.err.println(getName() + " received crash notification: " + crashedBroadcast.getReason());
+            terminate();
+            Thread.currentThread().interrupt();           
             // Perform any cleanup or map adjustment due to crash
         });
-
         System.out.println(getName() + " initialized.");
     }
+    
+
 }

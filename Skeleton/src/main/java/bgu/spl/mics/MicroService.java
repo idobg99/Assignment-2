@@ -184,7 +184,7 @@ public abstract class MicroService implements Runnable {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Preserve interrupt status
-        } finally {
+        } finally { 
             // Step 4: Unregister from the MessageBus
             messageBus.unregister(this);
         }

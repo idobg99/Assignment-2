@@ -51,7 +51,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public <T> void complete(Event<T> e, T result) {
-		@SuppressWarnings("unchecked")
+		//@SuppressWarnings("unchecked")
         Future<T> future = (Future<T>) eventFutures.remove(e);
         if (future != null) {
             future.resolve(result);
