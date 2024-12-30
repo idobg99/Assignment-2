@@ -4,13 +4,11 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.DetectObjectsEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.Camera;
-//import bgu.spl.mics.application.objects.DetectedObject;
 import bgu.spl.mics.application.objects.StampedDetectedObjects;
 import bgu.spl.mics.application.objects.StatisticalFolder;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * CameraService processes data from the camera and
@@ -21,14 +19,14 @@ public class CameraService extends MicroService {
     private int lastProcessedTick; // Tracks the last tick this service processed
     private StatisticalFolder statfolder = StatisticalFolder.getInstance();
 
-    // List to hold pending events with countdowns
-    private final List<Object[]> pendingEvents; // Each entry: {DetectObjectsEvent, countdown}
+    // Queue to hold pending events with their detection times
+    private final Queue<DetectObjectsEvent> pendingEvents;
 
     public CameraService(Camera camera) {
         super("CameraService-" + camera.getId());
         this.camera = camera;
         this.lastProcessedTick = 0;
-        this.pendingEvents = new ArrayList<>();
+        this.pendingEvents = new LinkedList<>();
     }
 
     @Override
@@ -37,27 +35,18 @@ public class CameraService extends MicroService {
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast tick) -> {
             int currentTick = tick.getTick();
 
-            // Process pending events
-            Iterator<Object[]> iterator = pendingEvents.iterator();
-            while (iterator.hasNext()) {
-                Object[] entry = iterator.next();
-                //StampedDetectedObjects detectedObjects = (StampedDetectedObjects) entry[0];
-                int remainingTicks = (int) entry[1];
+            // Process pending events from the queue
+            while (!pendingEvents.isEmpty()) {
+                DetectObjectsEvent event = pendingEvents.peek();
+                int detectionTime = event.getTime();
 
-                // Decrement countdown
-                remainingTicks--;
-
-                if (remainingTicks <= 0) {
-                    // Countdown reached 0; send events for the detected objects
-                    sendEvent((DetectObjectsEvent)entry[0]);
-                    
-                    //increment the number of detected objects in statistics
-                    statfolder.incrementDetectedObjects(((DetectObjectsEvent)entry[0]).getDetectedObjects().size());
-                    
-                    iterator.remove(); // Remove the event from the list
+                // Check if the event is ready to be processed
+                if (currentTick - camera.getFrequency() >= detectionTime) {
+                    sendEvent(event);
+                    statfolder.incrementDetectedObjects(event.getDetectedObjects().size());
+                    pendingEvents.poll(); // Remove the processed event
                 } else {
-                    // Update countdown
-                    entry[1] = remainingTicks;
+                    break; // The next event is not ready yet
                 }
             }
 
@@ -66,14 +55,17 @@ public class CameraService extends MicroService {
                 StampedDetectedObjects detectedObjects = camera.getDetectedObjectsAt(currentTick);
 
                 if (detectedObjects != null) {
-                    // Add new detections to the list with their delay
-                    DetectObjectsEvent e = new DetectObjectsEvent(detectedObjects);
+                    // Create a DetectObjectsEvent
+                    DetectObjectsEvent event = new DetectObjectsEvent(detectedObjects);
+
+                    // Handle frequency logic
                     if (camera.getFrequency() == 0) {
-                        sendEvent(e);
-                        statfolder.incrementDetectedObjects(e.getDetectedObjects().size());
-                    }
-                    else {
-                        pendingEvents.add(new Object[]{e, camera.getFrequency()});
+                        // Process immediately if frequency is 0
+                        sendEvent(event);
+                        statfolder.incrementDetectedObjects(event.getDetectedObjects().size());
+                    } else {
+                        // Add to the queue with the detection time
+                        pendingEvents.offer(event);
                     }
                 }
 
