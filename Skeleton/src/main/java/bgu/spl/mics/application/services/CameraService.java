@@ -1,11 +1,8 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.DetectObjectsEvent;
-import bgu.spl.mics.application.messages.TickBroadcast;
-import bgu.spl.mics.application.objects.Camera;
-import bgu.spl.mics.application.objects.StampedDetectedObjects;
-import bgu.spl.mics.application.objects.StatisticalFolder;
+import bgu.spl.mics.application.messages.*;
+import bgu.spl.mics.application.objects.*;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -15,9 +12,12 @@ import java.util.Queue;
  * sends DetectObjectsEvent messages to other services.
  */
 public class CameraService extends MicroService {
+    private static final String ErrorMsg = "ERROR";
+
     private final Camera camera;
     private int lastProcessedTick; // Tracks the last tick this service processed
     private StatisticalFolder statfolder = StatisticalFolder.getInstance();
+    private StatisticalFolder statisticalFolder = StatisticalFolder.getInstance();
 
     // Queue to hold pending events with their detection times
     private final Queue<DetectObjectsEvent> pendingEvents;
@@ -53,6 +53,19 @@ public class CameraService extends MicroService {
             // Ensure the service processes new detections only once per tick
             if (currentTick > lastProcessedTick) {
                 StampedDetectedObjects detectedObjects = camera.getDetectedObjectsAt(currentTick);
+
+                // Check for Error
+                for (DetectedObject d : detectedObjects.getDetectedObjects()) {
+                    if (d.getId().equals(ErrorMsg)) {
+                        
+                        // Log in statistics 
+                        statisticalFolder.logError("{" + camera.getId() + ": Found - " + ErrorMsg + 
+                                                        " in data at time - " + currentTick + "}");
+
+                        // Send crashed broadcast
+                        sendBroadcast(new CrashedBroadcast(camera.getId() + "found error in data"));
+                    }
+                }
 
                 if (detectedObjects != null) {
                     // Create a DetectObjectsEvent

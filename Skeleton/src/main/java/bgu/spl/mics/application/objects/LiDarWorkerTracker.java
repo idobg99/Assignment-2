@@ -2,6 +2,8 @@ package bgu.spl.mics.application.objects;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
+//import bgu.spl.mics.application.messages.CrashedBroadcast;
+
 
 /**
  * LiDarWorkerTracker is responsible for managing a LiDAR worker.
@@ -10,12 +12,15 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class LiDarWorkerTracker {
 
+    private static final String ErrorMsg = "ERROR";
+
     private final int id;
     private final int frequency;
     private STATUS status;
     private List<TrackedObject> lastTrackedObjects;
     private final ReentrantLock lock;
     private LiDarDataBase lidarDB = LiDarDataBase.getInstance();
+    private StatisticalFolder statisticalFolder = StatisticalFolder.getInstance();
 
     public LiDarWorkerTracker(int id, int frequency) {
         this.id = id;
@@ -38,6 +43,12 @@ public class LiDarWorkerTracker {
             List<StampedCloudPoints> pointsList = lidarDB.getStampedCloudPoints(time);
 
             for (StampedCloudPoints point : pointsList) {
+                if (point.getId().equals(ErrorMsg)) {
+                    statisticalFolder.logError("{" + this.id + ": Found - " + ErrorMsg + 
+                                                        " in data at time - " + time + "}");
+                    //sendBroadcast(new CrashedBroadcast(this.id + "found error in data"));
+                    return null;
+                }
                 if (point.getId().equals(id)) {
                     TrackedObject trackedObject = new TrackedObject(point, description);
                     lastTrackedObjects.add(trackedObject);

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.DetectObjectsEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
@@ -67,6 +68,7 @@ public class LiDarService extends MicroService {
                         } else {
                             System.err.println(getName() + " failed to track object: " + obj.getId());
                             complete(event, false);
+                            sendBroadcast(new CrashedBroadcast(lidarWorker.getId() + " found error in data"));
                         }
                     }
 
@@ -104,6 +106,8 @@ public class LiDarService extends MicroService {
                         trackedObjects.add(trackedObject);
                     } else {
                         System.err.println(getName() + " failed to track object: " + obj.getId());
+                        complete(event, false);
+                        sendBroadcast(new CrashedBroadcast(lidarWorker.getId() + " found error in data"));
                     }
                 }
                 TrackedObjectsEvent trackedEvent = new TrackedObjectsEvent(event.getTime(), trackedObjects);
