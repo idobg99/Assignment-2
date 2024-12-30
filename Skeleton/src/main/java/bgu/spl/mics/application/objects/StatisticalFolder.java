@@ -1,5 +1,7 @@
 package bgu.spl.mics.application.objects;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -12,6 +14,8 @@ public class StatisticalFolder {
     private int numDetectedObjects = 0;
     private int numTrackedObjects = 0;
     private int numLandmarks = 0;
+    private final List<String> errorLogs = new ArrayList<>(); // Added for error logs
+
     private final ReentrantLock lock = new ReentrantLock();
 
     // Private constructor to prevent instantiation
@@ -63,6 +67,24 @@ public class StatisticalFolder {
         }
     }
 
+    public void logError(String errorMessage) { // Added method for error logging
+        lock.lock();
+        try {
+            errorLogs.add(errorMessage);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public List<String> getErrorLogs() { // Added method to retrieve error logs
+        lock.lock();
+        try {
+            return new ArrayList<>(errorLogs); // Return a copy to avoid concurrency issues
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public void printSummary() {
         lock.lock();
         try {
@@ -71,6 +93,12 @@ public class StatisticalFolder {
             System.out.println("Detected Objects: " + numDetectedObjects);
             System.out.println("Tracked Objects: " + numTrackedObjects);
             System.out.println("Landmarks Identified: " + numLandmarks);
+            if (!errorLogs.isEmpty()) {
+                System.out.println("Error Logs:");
+                for (String log : errorLogs) {
+                    System.out.println(" - " + log);
+                }
+            }
         } finally {
             lock.unlock();
         }
