@@ -18,6 +18,7 @@ public class Camera {
     private final int frequency;  // Detection frequency
     private STATUS status;  // Status of the camera (e.g., UP or DOWN)
     private final  Map<Integer,StampedDetectedObjects> detectedObjectsMap;  // List of detected objects with availability times
+    private StampedDetectedObjects lastObjects = null;
 
     public Camera(int id, int frequency,JsonNode detectedData ) {
         this.id = id;
@@ -63,7 +64,8 @@ public class Camera {
      * @return A list of all detected objects available at the given tick.
      */
     public StampedDetectedObjects getDetectedObjectsAt(int currentTime) {
-        return detectedObjectsMap.get(currentTime);
+        this.lastObjects = detectedObjectsMap.get(currentTime);
+        return this.lastObjects;
     }
 
     public int getId() {
