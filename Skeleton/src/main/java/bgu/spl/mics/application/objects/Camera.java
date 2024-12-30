@@ -84,6 +84,10 @@ public class Camera {
         this.status = status;
     }
 
+    public StampedDetectedObjects GetLastDetectedObjects() {
+        return this.lastObjects;
+    }
+
     @Override
     public String toString() {
         return "Camera{" +
