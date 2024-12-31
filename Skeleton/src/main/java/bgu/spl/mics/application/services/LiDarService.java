@@ -8,6 +8,7 @@ import java.util.List;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.DetectObjectsEvent;
+import bgu.spl.mics.application.messages.TerminatedBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
 import bgu.spl.mics.application.objects.DetectedObject;
@@ -123,6 +124,22 @@ public class LiDarService extends MicroService {
                 pendingTrackedEvents.offer(event);
             }
         });
+        // Handle TerminatedBroadcast
+        subscribeBroadcast(TerminatedBroadcast.class, terminatedBroadcast -> {
+            System.out.println(getName() + " received termination signal. Shutting down.");
+            terminate();
+        });
+
+        // Handle CrashedBroadcast
+        subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
+            System.err.println(getName() + " received crash notification: " + crashedBroadcast.getReason());
+            System.err.println(getName() + " checkn: " + crashedBroadcast.getReason());
+            
+            terminate();
+            // Perform any cleanup or map adjustment due to crash
+        });
+
+
 
         System.out.println(getName() + " initialized.");
     }
