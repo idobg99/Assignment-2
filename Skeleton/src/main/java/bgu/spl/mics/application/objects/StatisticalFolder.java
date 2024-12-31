@@ -20,7 +20,6 @@ public class StatisticalFolder {
     private final List<String> errorLogs = new ArrayList<>(); 
     public StampedDetectedObjects lDetectedObjects = null;
     private final List<List<TrackedObject>> lTrackedObjects = new CopyOnWriteArrayList<>();
-
     private final ReentrantLock lock = new ReentrantLock();
 
     // Private constructor to prevent instantiation
@@ -114,8 +113,4 @@ public class StatisticalFolder {
     public List<List<TrackedObject>> GetLastTrackedObject(){
         return lTrackedObjects;
     }
-    public List<String> getErrorLogs(){
-        return errorLogs;
-    }
-
 }
