@@ -18,8 +18,8 @@ public class StatisticalFolder {
 
     // Added for error logs:
     private final List<String> errorLogs = new ArrayList<>(); 
-    public StampedDetectedObjects lDetectedObjects = null;
-    private final List<List<TrackedObject>> lTrackedObjects = new CopyOnWriteArrayList<>();
+    private StampedDetectedObjects lDetectedObjects = null;
+    private final List<List<TrackedObject>> lTrackedObjects = new ArrayList<>();
     private final ReentrantLock lock = new ReentrantLock();
 
     // Private constructor to prevent instantiation
@@ -107,10 +107,21 @@ public class StatisticalFolder {
             lock.unlock();
         }
     }
+    
     public void addLastTrackedObject(List<TrackedObject> T){
-        lTrackedObjects.add(T);
+        lock.lock();
+        try {
+            lTrackedObjects.add(T);
+        } finally {
+            lock.unlock();
+        }       
     }
+
     public List<List<TrackedObject>> GetLastTrackedObject(){
         return lTrackedObjects;
+    }
+
+    public void setlDetectedObjects(StampedDetectedObjects object){
+        this.lDetectedObjects = object;
     }
 }
