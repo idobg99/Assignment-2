@@ -1,11 +1,10 @@
 package bgu.spl.mics.application.objects;
 
-import java.io.FileReader;
-import java.util.*;
+import java.io.File;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Represents the robot's GPS and IMU system.
@@ -19,30 +18,32 @@ public class GPSIMU {
     private GPSIMU() {
         this.currentTick = 0;
         this.status = STATUS.UP;
-        this.poseMap = new ConcurrentHashMap<>();
-
-        
+        this.poseMap = new ConcurrentHashMap<>();        
     }
 
     public Boolean Update(String poseDataFilePath) {
         try {
-            // Parse the JSON file to load pose data
-            Gson gson = new Gson();
-            FileReader reader = new FileReader(poseDataFilePath);
-            TypeToken<List<Pose>> typeToken = new TypeToken<List<Pose>>() {};
-            List<Pose> loadedPoses = gson.fromJson(reader, typeToken.getType());
-            if (loadedPoses != null) {
-                for (Pose pose : loadedPoses) {
-                    this.poseMap.put(pose.getTime(), pose);
-                }
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(new File(poseDataFilePath));
+
+            // Iterate over each element in the JSON array
+            for (JsonNode node : rootNode) {
+                int time = node.get("time").asInt();
+                double x = node.get("x").asDouble();
+                double y = node.get("y").asDouble();
+                float yaw = (float) node.get("yaw").asDouble();
+
+                // Create a Pose and add it to the list
+                Pose pose = new Pose(time, x, y, yaw);
+                this.poseMap.put(pose.getTime(), pose);
             }
             return true;
         } catch (Exception e) {
-            System.err.println("Failed to load pose data from file: " + e.getMessage());
+            System.err.println("Failed to load poses: " + e.getMessage());
             return false;
         }
     }
-
+    
     /**
      * Retrieves the pose corresponding to the given tick.
      *

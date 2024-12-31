@@ -31,7 +31,7 @@ public class Pose {
      * @param yaw  The yaw angle (orientation).
      */
     public Pose(int time, double x, double y, float yaw) {
-        this.position = new CloudPoint((int) x, (int) y);
+        this.position = new CloudPoint(x,y);
         this.yaw = yaw;
         this.time = time;
     }
@@ -47,10 +47,6 @@ public class Pose {
     public double getY() {
         return position.getY();
     }
-
-    /*public double getZ() {
-        return position.getZ();
-    }*/
 
     public float getYaw() {
         return yaw;

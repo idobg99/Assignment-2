@@ -23,7 +23,7 @@ public class CloudPoint {
         return y;
     }
 
-    /*public double getZ() {
-        return z;
-    }*/
+    public String toString() {
+        return x + "," +y;
+    }
 }
