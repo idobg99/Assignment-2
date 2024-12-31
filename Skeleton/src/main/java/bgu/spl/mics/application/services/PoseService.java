@@ -1,7 +1,9 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.PoseEvent;
+import bgu.spl.mics.application.messages.TerminatedBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.GPSIMU;
 import bgu.spl.mics.application.objects.Pose;
@@ -42,6 +44,17 @@ public class PoseService extends MicroService {
                 sendEvent(new PoseEvent(currentPose));
                 System.out.println(getName() + " sent PoseEvent: " + currentPose);
             }
+        });
+        subscribeBroadcast(TerminatedBroadcast.class, terminatedBroadcast -> {
+            System.out.println(getName() + " received termination signal. Shutting down.");
+            terminate();
+        });
+
+        // Handle CrashedBroadcast
+        subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
+            System.err.println(getName() + " received crash notification: " + crashedBroadcast.getReason());
+            terminate();
+            // Perform any cleanup or map adjustment due to crash
         });
 
         System.out.println(getName() + " initialized.");
