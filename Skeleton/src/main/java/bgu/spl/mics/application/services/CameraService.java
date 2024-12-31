@@ -94,9 +94,7 @@ public class CameraService extends MicroService {
         // Handle CrashedBroadcast
         subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
             System.err.println(getName() + " received crash notification: " + crashedBroadcast.getReason());
-            System.err.println(getName() + " ceehkn: " + crashedBroadcast.getReason());
-            statisticalFolder.lDetectedObjects = camera.GetLastDetectedObjects();
-            
+            statisticalFolder.setlDetectedObjects(camera.GetLastDetectedObjects());
             terminate();
             // Perform any cleanup or map adjustment due to crash
         });
