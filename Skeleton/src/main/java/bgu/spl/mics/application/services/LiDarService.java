@@ -134,6 +134,7 @@ public class LiDarService extends MicroService {
         subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
             System.err.println(getName() + " received crash notification: " + crashedBroadcast.getReason());
             System.err.println(getName() + " checkn: " + crashedBroadcast.getReason());
+            statfolder.addLastTrackedObject(lidarWorker.getLastTrackedObjects());
             
             terminate();
             // Perform any cleanup or map adjustment due to crash
