@@ -2,6 +2,7 @@ package bgu.spl.mics.application.objects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -10,11 +11,15 @@ import java.util.concurrent.locks.ReentrantLock;
  * the number of objects detected and tracked, and the number of landmarks identified.
  */
 public class StatisticalFolder {
-    private int systemRuntime = 0;
-    private int numDetectedObjects = 0;
-    private int numTrackedObjects = 0;
-    private int numLandmarks = 0;
-    private final List<String> errorLogs = new ArrayList<>(); // Added for error logs
+    public int systemRuntime = 0;
+    public int numDetectedObjects = 0;
+    public int numTrackedObjects = 0;
+    public int numLandmarks = 0;
+
+    // Added for error logs:
+    private final List<String> errorLogs = new ArrayList<>(); 
+    public StampedDetectedObjects lDetectedObjects = null;
+    private final List<List<TrackedObject>> lTrackedObjects = new CopyOnWriteArrayList<>();
 
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -103,4 +108,14 @@ public class StatisticalFolder {
             lock.unlock();
         }
     }
+    public void addLastTrackedObject(List<TrackedObject> T){
+        lTrackedObjects.add(T);
+    }
+    public List<List<TrackedObject>> GetLastTrackedObject(){
+        return lTrackedObjects;
+    }
+    public List<String> getErrorLogs(){
+        return errorLogs;
+    }
+
 }

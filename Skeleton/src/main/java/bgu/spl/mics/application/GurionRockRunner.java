@@ -1,36 +1,17 @@
 package bgu.spl.mics.application;
 
-
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import bgu.spl.mics.MessageBus;
-import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.objects.Camera;
 import bgu.spl.mics.application.objects.FusionSlam;
 import bgu.spl.mics.application.objects.GPSIMU;
 import bgu.spl.mics.application.objects.LiDarDataBase;
-import bgu.spl.mics.MicroService;
-
-// import com.google.gson.Gson;
-// import com.google.gson.reflect.TypeToken;
-// import java.io.FileReader;
-// import java.io.IOException;
-// import java.lang.reflect.Type;
-// import java.util.List;
 import bgu.spl.mics.application.objects.LiDarWorkerTracker;
-import bgu.spl.mics.application.objects.StampedDetectedObjects;
+import bgu.spl.mics.application.objects.StatisticalFolder;
+import bgu.spl.mics.application.objects.errorOutput;
+import bgu.spl.mics.application.objects.output;
 import bgu.spl.mics.application.services.CameraService;
 import bgu.spl.mics.application.services.FusionSlamService;
 import bgu.spl.mics.application.services.LiDarService;
@@ -38,9 +19,6 @@ import bgu.spl.mics.application.services.PoseService;
 import bgu.spl.mics.application.services.TimeService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-
 
 
 /**
@@ -51,7 +29,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * </p>
  */
 public class GurionRockRunner {
-
     /**
      * The main method of the simulation.
      * This method sets up the necessary components, parses configuration files,
@@ -60,12 +37,7 @@ public class GurionRockRunner {
      * @param args Command-line arguments. The first argument is expected to be the path to the configuration file.
      */
     public static void main(String[] args) {
-        System.out.println("Hello World!");
-
-        // Parse configuration file
-        //String config_file = "/workspaces/Assignment-2/Skeleton/example_input_2/configuration_file.json";
-        String config_file = args[0];
-        
+        String config_file = args[0];       
         ExecutorService threadPool = Executors.newFixedThreadPool(20);
 
         try {
@@ -118,37 +90,22 @@ public class GurionRockRunner {
                 System.out.println("All tasks have finished.");
             } else {
                 System.out.println("Timeout: Some tasks may not have finished.");
-            }
-
-            
-
-
+            }  
         } catch (Exception e) {
             System.err.println("Error reading JSON file: " + e.getMessage());
         }
-
-
         
-        // // Initializing the GPSIMU
-        // GPSIMU gps = GPSIMU.getInstance();
-        // gps.Update(pose_data);
-
-        // Initializing the LiDAR DB
-        // LiDarDataBase lidarDB = LiDarDataBase.getInstance();
-        // lidarDB.insertWithFile(lidar_data);
-
-        // // Initialize the Cameras and LiDAR detectors
-        // try {
-        //     Gson gson = new Gson();
-        //     FileReader reader = new FileReader(config_file);
-        //     Map<String, Object> config = gson.fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
-        // }
-        // catch(Exception e) {
-        //     System.out.println("Falied to load the system - error: {" + e + "}");
-        // }
-
-
-        
+        //creating outputFile:
+        File outputfile = new File(config_file);
+        String directory = outputfile.getParent(); 
+             
+        if (!StatisticalFolder.getInstance().getErrorLogs().isEmpty()){
+            errorOutput.generateOutputFile(directory);
+        }
+        else{
+            output.generateOutputFile(directory);
+        }
+   
 
         
         
