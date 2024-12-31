@@ -19,7 +19,7 @@ public class errorOutput {
         //add error details
         JSONObject errorsDetails = new JSONObject();
         errorsDetails.put("Error source:", stats.getErrorLogs().get(0));
-        errorsDetails.put("Canera last frame:", stats.lDetectedObjects.toString());
+        errorsDetails.put("Canera last frame:", stats.getlDetectedObjects());
         errorsDetails.put("Lidar Last Objects:","");
         for (List<TrackedObject> list : stats.GetLastTrackedObject()){
             for (TrackedObject object: list){
