@@ -86,6 +86,19 @@ public class CameraService extends MicroService {
                 lastProcessedTick = currentTick;
             }
         });
+        subscribeBroadcast(TerminatedBroadcast.class, terminatedBroadcast -> {
+            System.out.println(getName() + " received termination signal. Shutting down.");
+            terminate();
+        });
+
+        // Handle CrashedBroadcast
+        subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
+            System.err.println(getName() + " received crash notification: " + crashedBroadcast.getReason());
+            System.err.println(getName() + " ceehkn: " + crashedBroadcast.getReason());
+            
+            terminate();
+            // Perform any cleanup or map adjustment due to crash
+        });
 
         System.out.println(getName() + " initialized.");
     }
