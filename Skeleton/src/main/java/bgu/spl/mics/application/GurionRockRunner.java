@@ -49,19 +49,19 @@ public class GurionRockRunner {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(new File(config_file));
 
-            /*// initializing Poses and fusionSlam::
+            // initializing Poses and fusionSlam::
             GPSIMU gps = GPSIMU.getInstance();
             String PoseDataPath = rootNode.path("poseJsonFile").asText(); 
             gps.Update(directory+ "/pose_data.json");  //change it to PoseDataPath if the path wil be correct.
             threadPool.submit(new PoseService(gps));
-            threadPool.submit(new FusionSlamService(FusionSlam.getInstance()));*/
+            threadPool.submit(new FusionSlamService(FusionSlam.getInstance()));
 
-            /*// Initializing the LiDAR DB:   
+            // Initializing the LiDAR DB:   
             String LidarDataPath = rootNode.path("LiDarWorkers").path("lidars_data_path").asText();
             LiDarDataBase lidarDataBase = LiDarDataBase.getInstance();
             lidarDataBase.insertWithFile(directory+ "/lidar_data.json");  //change it to LidarDataPath if the path wil be correct.          
-            */
             
+
             // Parse Cameras:
             JsonNode cameraConfig = rootNode.path("Cameras").path("CamerasConfigurations");
             String cameraDataPath = rootNode.path("Cameras").path("camera_datas_path").asText();
@@ -71,7 +71,11 @@ public class GurionRockRunner {
                 int id = config.get("id").asInt();
                 int frequency = config.get("frequency").asInt();
                 String cameraKey = config.get("camera_key").asText();
-                JsonNode detectedData = cameraData.path(cameraKey);
+                //String cameraKey = config.get("camera_datas_path").asText();
+
+                //System.out.println("CAMERAKEY: " + cameraKey);
+
+                JsonNode detectedData = cameraData.path(cameraKey); // List of the stamped obj
                 Camera camera = new Camera(id, frequency,detectedData);
 
                 System.out.println("CAMERA - " + camera.getId());
@@ -79,7 +83,7 @@ public class GurionRockRunner {
                 threadPool.submit(new CameraService(camera));
             } 
             
-            /*// Parse LiDar Workers
+            // Parse LiDar Workers
             JsonNode lidarConfigs = rootNode.path("LiDarWorkers").path("LidarConfigurations");
             for (JsonNode config : lidarConfigs) {
                 int id = config.get("id").asInt();
@@ -89,7 +93,7 @@ public class GurionRockRunner {
                 System.out.println("LIDAR - " + lidar.getId());
 
                 threadPool.submit(new LiDarService(lidar));
-            }*/
+            }
 
             //initializing given times:
             int TickTime = rootNode.path("TickTime").asInt();

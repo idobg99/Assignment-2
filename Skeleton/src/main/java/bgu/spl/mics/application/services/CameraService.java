@@ -60,22 +60,27 @@ public class CameraService extends MicroService {
             if (currentTick > lastProcessedTick) {
                 StampedDetectedObjects detectedObjects = camera.getDetectedObjectsAt(currentTick);
 
-                System.out.println("CAMERA DETECTED!!!!!!!!!!!!!!!! - " + detectedObjects.toString());
-
-                // Check for Error
-                for (DetectedObject d : detectedObjects.getDetectedObjects()) {
-                    if (d.getId().equals(ErrorMsg)) {
-                        
-                        // Log in statistics 
-                        statisticalFolder.logError("{" + camera.getId() + ": Found - " + ErrorMsg + 
-                                                        " in data at time - " + currentTick + "}");
-
-                        // Send crashed broadcast
-                        sendBroadcast(new CrashedBroadcast(camera.getId() + "found error in data"));
-                    }
-                }
+                
 
                 if (detectedObjects != null) {
+
+
+                    System.out.println("CAMERA DETECTED!!!!!!!!!!!!!!!! - " + detectedObjects.toString());
+
+                    // Check for Error
+                    for (DetectedObject d : detectedObjects.getDetectedObjects()) {
+                        if (d.getId().equals(ErrorMsg)) {
+                            
+                            // Log in statistics 
+                            statisticalFolder.logError("{" + camera.getId() + ": Found - " + ErrorMsg + 
+                                                            " in data at time - " + currentTick + "}");
+
+                            // Send crashed broadcast
+                            sendBroadcast(new CrashedBroadcast(camera.getId() + "found error in data"));
+                        }
+                    }
+
+
                     // Create a DetectObjectsEvent
                     DetectObjectsEvent event = new DetectObjectsEvent(detectedObjects);
 
