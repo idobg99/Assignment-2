@@ -1,9 +1,10 @@
 package bgu.spl.mics.application.objects;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.FileReader;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -20,27 +21,49 @@ public class LiDarDataBase {
         this.lock = new ReentrantReadWriteLock(); // Initialize the lock
     }
 
-    public void insertWithFile(String filePath) {
-        lock.writeLock().lock(); // Acquire write lock
-        try {
-            // Parse JSON file into a list of StampedCloudPoints
-            Gson gson = new Gson();
-            FileReader reader = new FileReader(filePath);
-            List<StampedCloudPoints> stampedCloudPointsList = gson.fromJson(
-                    reader,
-                    new TypeToken<List<StampedCloudPoints>>() {}.getType()
-            );
+    // public void insertWithFile(String filePath) {
+    //     lock.writeLock().lock(); // Acquire write lock
+    //     try {
+    //         // Parse JSON file into a list of StampedCloudPoints
+    //         Gson gson = new Gson();
+    //         FileReader reader = new FileReader(filePath);
+    //         List<StampedCloudPoints> stampedCloudPointsList = gson.fromJson(
+    //                 reader,
+    //                 new TypeToken<List<StampedCloudPoints>>() {}.getType()
+    //         );
 
-            // Group StampedCloudPoints by time
-            for (StampedCloudPoints stampedCloudPoints : stampedCloudPointsList) {
-                cloudPointsMap
-                        .computeIfAbsent(stampedCloudPoints.getTime(), k -> new ArrayList<>())
-                        .add(stampedCloudPoints);
+    //         // Group StampedCloudPoints by time
+    //         for (StampedCloudPoints stampedCloudPoints : stampedCloudPointsList) {
+    //             cloudPointsMap
+    //                     .computeIfAbsent(stampedCloudPoints.getTime(), k -> new ArrayList<>())
+    //                     .add(stampedCloudPoints);
+    //         }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     } finally {
+    //         lock.writeLock().unlock(); // Release write lock
+    //     }
+    // }
+
+    public void insertWithFile(String filePath) throws IOException {
+        File file = new File(filePath);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(file);
+
+        lock.writeLock().lock();
+        for (JsonNode node : rootNode) {
+            int time = node.get("time").asInt();
+            String id = node.get("id").asText();
+
+            List<CloudPoint> cloudPoints = new ArrayList<>();
+            for (JsonNode point : node.get("cloudPoints")) {
+                double x = point.get(0).asDouble();
+                double y = point.get(1).asDouble();
+                cloudPoints.add(new CloudPoint(x, y /*, z*/));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            lock.writeLock().unlock(); // Release write lock
+
+            StampedCloudPoints stampedCloudPoints = new StampedCloudPoints(time, id, cloudPoints);
+            this.cloudPointsMap.computeIfAbsent(time, k -> new ArrayList<>()).add(stampedCloudPoints);
         }
     }
 

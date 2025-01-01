@@ -9,7 +9,6 @@ import bgu.spl.mics.application.objects.FusionSlam;
 import bgu.spl.mics.application.objects.GPSIMU;
 import bgu.spl.mics.application.objects.LiDarDataBase;
 import bgu.spl.mics.application.objects.LiDarWorkerTracker;
-import bgu.spl.mics.application.objects.Pose;
 import bgu.spl.mics.application.objects.StatisticalFolder;
 import bgu.spl.mics.application.objects.errorOutput;
 import bgu.spl.mics.application.objects.output;
@@ -20,8 +19,6 @@ import bgu.spl.mics.application.services.PoseService;
 import bgu.spl.mics.application.services.TimeService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-
 
 /**
  * The main entry point for the GurionRock Pro Max Ultra Over 9000 simulation.
@@ -40,7 +37,7 @@ public class GurionRockRunner {
      */
 
     //pathes to insert input files:
-    ///usr/bin/env /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -cp /tmp/cp_46t2ak5l8nahg3aighn8giltk.jar bgu.spl.mics.application.GurionRockRunner /workspaces/Assignment-2/Skeleton/example input/configuration_file.json
+    ///usr/bin/env /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -cp /tmp/cp_46t2ak5l8nahg3aighn8giltk.jar bgu.spl.mics.application.GurionRockRunner /workspaces/Assignment-2/Skeleton/example_input/configuration_file.json
     ///usr/bin/env /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -cp /tmp/cp_46t2ak5l8nahg3aighn8giltk.jar bgu.spl.mics.application.GurionRockRunner /workspaces/Assignment-2/Skeleton/example_input_2/configuration_file.json
     public static void main(String[] args) {
         String config_file = args[0];  
@@ -91,14 +88,13 @@ public class GurionRockRunner {
             int TickTime = rootNode.path("TickTime").asInt();
             int Duration = rootNode.path("Duration").asInt();
             threadPool.submit(new TimeService(TickTime,Duration));   
-            
-            
+             
             threadPool.shutdown();
-            if (threadPool.awaitTermination(20, TimeUnit.SECONDS)) {
-                System.out.println("All tasks have finished.");
-            } else {
-                System.out.println("Timeout: Some tasks may not have finished.");
-            }  
+            // if (threadPool.awaitTermination(10, TimeUnit.SECONDS)) {
+            //     System.out.println("All tasks have finished.");
+            // } else {
+            //     System.out.println("Timeout: Some tasks may not have finished.");
+            // }  
         } catch (Exception e) {
             System.err.println("Error reading JSON file: " + e.getMessage());
         }
