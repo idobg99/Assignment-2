@@ -15,7 +15,6 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <!--<version>2.11.0</version>-->
             <version>2.8.9</version>
         </dependency>
         <dependency>
@@ -40,7 +39,7 @@
             <artifactId>json</artifactId>
             <version>20230227</version>
         </dependency>
-  </dependencies>
+    </dependencies>
     <build>
         <plugins>
             <!-- Maven Compiler Plugin -->
@@ -62,6 +61,43 @@
                     <useModulePath>false</useModulePath>
                 </configuration>
             </plugin>
+
+            <!-- Maven Jar Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>bgu.spl.mics.application.GurionRockRunner</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Maven Shade Plugin -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.4.1</version>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <transformers>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <mainClass>bgu.spl.mics.application.GurionRockRunner</mainClass>
+                            </transformer>
+                        </transformers>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+        
         </plugins>
     </build>
 </project>

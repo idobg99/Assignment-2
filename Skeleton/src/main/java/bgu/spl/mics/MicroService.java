@@ -142,7 +142,7 @@ public abstract class MicroService implements Runnable {
      * message.
      */
     protected final void terminate() {
-        this.terminated = true;
+        this.terminated = true; 
     }
 
     /**
@@ -160,6 +160,8 @@ public abstract class MicroService implements Runnable {
     @Override
     public final void run() {
         try {
+            System.out.println(getName() + " run() started.");
+
             // Step 1: Register with the MessageBus
             messageBus.register(this);
 
@@ -182,10 +184,15 @@ public abstract class MicroService implements Runnable {
                     System.err.println("No callback registered for message type: " + message.getClass().getSimpleName());
                 }
             }
-        } catch (InterruptedException e) {
+
+            System.out.println("TERMINATED - " + getName());
+
+        } catch (Exception e) {
+            System.out.println(e);
             Thread.currentThread().interrupt(); // Preserve interrupt status
         } finally {
             // Step 4: Unregister from the MessageBus
+            System.out.println("UNREGISTERINGGNGNGNGGNG - " + getName());
             messageBus.unregister(this);
         }
     }

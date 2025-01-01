@@ -35,8 +35,14 @@ public class CameraService extends MicroService {
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast tick) -> {
             int currentTick = tick.getTick();
 
+            System.out.println("TICKKKKKK _CAMERA - " + currentTick);
+
             // Process pending events from the queue
             while (!pendingEvents.isEmpty()) {
+
+                System.out.println("TEST PENDING QUEUE");
+
+
                 DetectObjectsEvent event = pendingEvents.peek();
                 int detectionTime = event.getTime();
 
@@ -53,6 +59,8 @@ public class CameraService extends MicroService {
             // Ensure the service processes new detections only once per tick
             if (currentTick > lastProcessedTick) {
                 StampedDetectedObjects detectedObjects = camera.getDetectedObjectsAt(currentTick);
+
+                System.out.println("CAMERA DETECTED!!!!!!!!!!!!!!!! - " + detectedObjects.toString());
 
                 // Check for Error
                 for (DetectedObject d : detectedObjects.getDetectedObjects()) {

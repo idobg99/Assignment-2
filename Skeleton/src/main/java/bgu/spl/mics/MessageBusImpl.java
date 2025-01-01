@@ -63,6 +63,9 @@ public class MessageBusImpl implements MessageBus {
 		CopyOnWriteArrayList<MicroService> subscribers = broadcastSubscribers.get(b.getClass());
         if (subscribers != null) {
             for (MicroService m : subscribers) {
+
+                System.out.println("SENDING BROADCAST TO SERVICE - " + m.getName());;
+
                 BlockingQueue<Message> queue = microServiceQueues.get(m);
                 if (queue != null) {
                     queue.offer(b);
@@ -98,6 +101,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void unregister(MicroService m) { // MAKE SURE THAT IS THREAD SAFE
+        System.out.println("Unregistering MicroService: " + m.getName());
 		lock.writeLock().lock();
         try {
             microServiceQueues.remove(m);

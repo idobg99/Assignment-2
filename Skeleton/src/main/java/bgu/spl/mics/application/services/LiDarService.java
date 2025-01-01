@@ -140,8 +140,6 @@ public class LiDarService extends MicroService {
             // Perform any cleanup or map adjustment due to crash
         });
 
-
-
         System.out.println(getName() + " initialized.");
     }
 }

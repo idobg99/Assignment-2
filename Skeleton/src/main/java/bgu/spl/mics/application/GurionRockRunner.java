@@ -43,23 +43,24 @@ public class GurionRockRunner {
         String config_file = args[0];  
         File inputfile = new File(config_file);
         String directory = inputfile.getParent();            
-        ExecutorService threadPool = Executors.newFixedThreadPool(20);
+        ExecutorService threadPool = Executors.newCachedThreadPool();
  
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(new File(config_file));
 
-            // initializing Poses and fusionSlam::
+            /*// initializing Poses and fusionSlam::
             GPSIMU gps = GPSIMU.getInstance();
             String PoseDataPath = rootNode.path("poseJsonFile").asText(); 
             gps.Update(directory+ "/pose_data.json");  //change it to PoseDataPath if the path wil be correct.
             threadPool.submit(new PoseService(gps));
-            threadPool.submit(new FusionSlamService(FusionSlam.getInstance()));
+            threadPool.submit(new FusionSlamService(FusionSlam.getInstance()));*/
 
-            // Initializing the LiDAR DB:   
+            /*// Initializing the LiDAR DB:   
             String LidarDataPath = rootNode.path("LiDarWorkers").path("lidars_data_path").asText();
             LiDarDataBase lidarDataBase = LiDarDataBase.getInstance();
             lidarDataBase.insertWithFile(directory+ "/lidar_data.json");  //change it to LidarDataPath if the path wil be correct.          
+            */
             
             // Parse Cameras:
             JsonNode cameraConfig = rootNode.path("Cameras").path("CamerasConfigurations");
@@ -72,17 +73,23 @@ public class GurionRockRunner {
                 String cameraKey = config.get("camera_key").asText();
                 JsonNode detectedData = cameraData.path(cameraKey);
                 Camera camera = new Camera(id, frequency,detectedData);
+
+                System.out.println("CAMERA - " + camera.getId());
+
                 threadPool.submit(new CameraService(camera));
             } 
             
-            // Parse LiDar Workers
+            /*// Parse LiDar Workers
             JsonNode lidarConfigs = rootNode.path("LiDarWorkers").path("LidarConfigurations");
             for (JsonNode config : lidarConfigs) {
                 int id = config.get("id").asInt();
                 int frequency = config.get("frequency").asInt();
                 LiDarWorkerTracker lidar = new LiDarWorkerTracker(id, frequency);
+                
+                System.out.println("LIDAR - " + lidar.getId());
+
                 threadPool.submit(new LiDarService(lidar));
-            }
+            }*/
 
             //initializing given times:
             int TickTime = rootNode.path("TickTime").asInt();
@@ -90,6 +97,17 @@ public class GurionRockRunner {
             threadPool.submit(new TimeService(TickTime,Duration));   
              
             threadPool.shutdown();
+
+            try {
+                if (!threadPool.awaitTermination(60, TimeUnit.SECONDS)) { // Wait for up to 60 seconds
+                    System.err.println("Some threads did not terminate in the expected time.");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Preserve interrupt status
+                System.err.println("Thread pool interrupted while waiting for termination.");
+            }
+
+            System.out.println("SHUTDOWN");
             // if (threadPool.awaitTermination(10, TimeUnit.SECONDS)) {
             //     System.out.println("All tasks have finished.");
             // } else {

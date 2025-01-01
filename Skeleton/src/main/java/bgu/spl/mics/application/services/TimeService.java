@@ -36,7 +36,7 @@ public class TimeService extends MicroService {
     protected void initialize() {
         // Subscribe to TerminateBroadcast with a lambda exp for the callback CHECK CALLBACK
         subscribeBroadcast(TerminateBroadcast.class, (TerminateBroadcast terminate) -> {
-            System.out.println(getName() + " received TerminateBroadcast. Terminating...");
+            System.out.println(getName() + " received termination signal. Shutting down.");
             terminate();
         });
 
@@ -57,11 +57,15 @@ public class TimeService extends MicroService {
                 // Send a TerminateBroadcast after all ticks
                 sendBroadcast(new TerminateBroadcast());
 
+                System.out.println("TEST HEREEEEEEEEEEEEEEEEEEEE");
+
                 // Signal this service to terminate
                 terminate();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // Preserve interrupt status
             }
         }).start();
+
+        System.out.println(getName() + " Initialized");
     }
 }

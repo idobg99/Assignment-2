@@ -2,7 +2,7 @@
     "Statistics:": {
         "numTrackedObjects": 0,
         "numLandmarks": 0,
-        "systemRuntime": 1,
+        "systemRuntime": 30,
         "numDetectedObjects": 0
     },
     "World Map": {"landMarks": []}
