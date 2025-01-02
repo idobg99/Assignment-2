@@ -64,11 +64,11 @@ public class CameraService extends MicroService {
                         if (d.getId().equals(ErrorMsg)) {
                             
                             // Log in statistics 
-                            statisticalFolder.logError("{" + camera.getId() + ": Found - " + ErrorMsg + 
+                            statisticalFolder.logError("{CAMERA-" + camera.getId() + ": Found - " + ErrorMsg + 
                                                             " in data at time - " + currentTick + "}");
 
                             // Send crashed broadcast
-                            sendBroadcast(new CrashedBroadcast(camera.getId() + "found error in data"));
+                            sendBroadcast(new CrashedBroadcast("CAMERA-" + camera.getId() + "found error in data"));
                         }
                     }
 
@@ -97,7 +97,7 @@ public class CameraService extends MicroService {
 
         // Handle CrashedBroadcast
         subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
-            System.err.println(getName() + " received crash notification: " + crashedBroadcast.getReason());
+            System.out.println(getName() + " received crash notification: " + crashedBroadcast.getReason());
             statisticalFolder.setLastDetectedObjects(camera.GetLastDetectedObjects());
             terminate();
             // Perform any cleanup or map adjustment due to crash

@@ -40,21 +40,25 @@ public class LiDarWorkerTracker {
     public TrackedObject trackObject(int time, String id, String description) {
         lock.lock();
         try {
-            List<StampedCloudPoints> pointsList = lidarDB.getStampedCloudPoints(time);
+            for (int i = time; i > 0; i--) { //IS THIS NEEDED?
+                List<StampedCloudPoints> pointsList = lidarDB.getStampedCloudPoints(i);
 
-            for (StampedCloudPoints point : pointsList) {
-                if (point.getId().equals(ErrorMsg)) {
-                    statisticalFolder.logError("{" + this.id + ": Found - " + ErrorMsg + 
-                                                        " in data at time - " + time + "}");
-                    //sendBroadcast(new CrashedBroadcast(this.id + "found error in data"));
-                    return null;
+                for (StampedCloudPoints point : pointsList) {
+                    if (point.getId().equals(ErrorMsg)) {
+                        statisticalFolder.logError("{LiDAR-" + this.id + ": Found - " + ErrorMsg + 
+                                                            " in data at time - " + time + "}");
+                        return null;
+                    }
+                    if (point.getId().equals(id)) {
+                        TrackedObject trackedObject = new TrackedObject(point, description);
+                        lastTrackedObjects.add(trackedObject);
+                        return trackedObject;
+                    }
                 }
-                if (point.getId().equals(id)) {
-                    TrackedObject trackedObject = new TrackedObject(point, description);
-                    lastTrackedObjects.add(trackedObject);
-                    return trackedObject;
-                }
+                statisticalFolder.logError("{LiDAR-" + this.id + ": Error Not Found - " + id + 
+                                                            " in data at time - " + time + "}");
             }
+            
             return null;
         } finally {
             lock.unlock();

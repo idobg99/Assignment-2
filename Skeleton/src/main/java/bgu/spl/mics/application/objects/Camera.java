@@ -20,6 +20,8 @@ public class Camera {
     private final  Map<Integer,StampedDetectedObjects> detectedObjectsMap;  // List of detected objects with availability times
     private StampedDetectedObjects lastObjects = null;
 
+    public static int LAST_DETECTED_OBJECT_TIME = -1;
+
     public Camera(int id, int frequency,JsonNode detectedData ) {
         this.id = id;
         this.frequency = frequency;
@@ -53,8 +55,16 @@ public class Camera {
                 objects.add(new DetectedObject(id, description));
             }
             map.put(time, new StampedDetectedObjects(time, objects));
+
+            if (time > Camera.LAST_DETECTED_OBJECT_TIME) {
+                setLastDetectedTime(time);
+            }
         }
         return map;
+    }
+
+    private static void setLastDetectedTime(int time) {
+        Camera.LAST_DETECTED_OBJECT_TIME = time;
     }
 
     /**

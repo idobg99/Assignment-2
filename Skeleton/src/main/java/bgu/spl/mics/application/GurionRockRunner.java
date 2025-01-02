@@ -49,15 +49,7 @@ public class GurionRockRunner {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(new File(config_file));
 
-            // initializing Poses and fusionSlam::
-            GPSIMU gps = GPSIMU.getInstance();
-            String PoseDataPath = rootNode.path("poseJsonFile").asText(); 
-            gps.Update(directory+ "/pose_data.json");  //change it to PoseDataPath if the path wil be correct.
-            threadPool.submit(new PoseService(gps));
-
-            FusionSlam.getInstance().setLastDetectionTime(GPSIMU.getInstance().getLastPoseTime());
-
-            threadPool.submit(new FusionSlamService(FusionSlam.getInstance()));
+            
 
             // Initializing the LiDAR DB:   
             String LidarDataPath = rootNode.path("LiDarWorkers").path("lidars_data_path").asText();
@@ -97,6 +89,18 @@ public class GurionRockRunner {
 
                 threadPool.submit(new LiDarService(lidar));
             }
+
+            // initializing Poses and fusionSlam::
+            GPSIMU gps = GPSIMU.getInstance();
+            String PoseDataPath = rootNode.path("poseJsonFile").asText(); 
+            gps.Update(directory+ "/pose_data.json");  //change it to PoseDataPath if the path wil be correct.
+            threadPool.submit(new PoseService(gps));
+
+            System.out.println("STARTO********************** " + Camera.LAST_DETECTED_OBJECT_TIME);
+
+            FusionSlam.getInstance().setLastDetectionTime(Camera.LAST_DETECTED_OBJECT_TIME);
+
+            threadPool.submit(new FusionSlamService(FusionSlam.getInstance()));
 
             //initializing given times:
             int TickTime = rootNode.path("TickTime").asInt();

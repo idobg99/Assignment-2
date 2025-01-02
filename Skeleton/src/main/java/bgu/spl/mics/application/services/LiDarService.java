@@ -69,7 +69,7 @@ public class LiDarService extends MicroService {
                         } else {
                             System.err.println(getName() + " failed to track object: " + obj.getId());
                             complete(event, false);
-                            sendBroadcast(new CrashedBroadcast(lidarWorker.getId() + " found error in data"));
+                            sendBroadcast(new CrashedBroadcast("LiDAR-" + lidarWorker.getId() + " found error in data"));
                         }
                     }
 
