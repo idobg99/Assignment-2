@@ -76,8 +76,7 @@ public class FusionSlamService extends MicroService {
                                                            tobj.getY() * Math.cos(Math.toRadians(currentPose.getYaw())));
                     coordinates.add(new CloudPoint(xGlobal, yGlobal));
 
-                    System.out.println("Local: (" + tobj.getX() + ", " + tobj.getY() + "), Pose: (" + currentPose.getX() + ", " + currentPose.getY() + ", " + currentPose.getYaw() + "), Global: (" + xGlobal + ", " + yGlobal + ")");
-
+                    System.out.println("Object: " + trackedObject.getId() + " Local: (" + tobj.getX() + ", " + tobj.getY() + "), Pose: (" + currentPose.getX() + ", " + currentPose.getY() + ", " + currentPose.getYaw() + "), Global: (" + xGlobal + ", " + yGlobal + ")");
                 }
 
                 LandMark newLandmark = new LandMark(trackedObject.getId(),

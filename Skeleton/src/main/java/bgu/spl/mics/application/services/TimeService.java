@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.TerminatedBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.StatisticalFolder;
@@ -34,14 +35,10 @@ public class TimeService extends MicroService {
      */
     @Override
     protected void initialize() {
-        // Subscribe to TerminateBroadcast with a lambda exp for the callback CHECK CALLBACK
-        subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast terminate) -> {
-            System.out.println(getName() + " received termination signal. Shutting down.");
-            terminate();
-        });
+        
 
         // Launch the ticking thread
-        new Thread(() -> {
+        Thread tickingThread = new Thread(() -> {
             try {
                 for (int currentTick = 1; currentTick <= duration; currentTick++) {
                     // Send a TickBroadcast
@@ -64,7 +61,23 @@ public class TimeService extends MicroService {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // Preserve interrupt status
             }
-        }).start();
+        });
+
+        // Subscribe to TerminateBroadcast with a lambda exp for the callback CHECK CALLBACK
+        subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast terminate) -> {
+            System.out.println(getName() + " received termination signal. Shutting down.");
+            tickingThread.interrupt();
+            terminate();
+        });
+
+        // Handle CrashedBroadcast
+        subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
+            System.err.println(getName() + " received crash notification: " + crashedBroadcast.getReason());
+            tickingThread.interrupt();
+            terminate();
+        });
+
+        tickingThread.start();
 
         System.out.println(getName() + " Initialized");
     }
