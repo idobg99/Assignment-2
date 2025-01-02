@@ -1,6 +1,8 @@
 package bgu.spl.mics.application.objects;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import bgu.spl.mics.application.messages.DetectObjectsEvent;
+import bgu.spl.mics.application.messages.TrackedObjectsEvent;
 
 //import bgu.spl.mics.application.messages.CrashedBroadcast;
 
@@ -81,21 +83,26 @@ public class LiDarWorkerTracker {
         return Collections.unmodifiableList(lastTrackedObjects);
     }
 
-    // public TrackedObjectsEvent processStampedCloudPoints(int currentTime, StampedCloudPoints stampedCloudPoints) {
-        
-    //     List<TrackedObject> trackedObjects = new ArrayList<>();
-    //     for (List<Double> cloudPointData : stampedCloudPoints.getCloudPoints()) {
-    //         CloudPoint cloudPoint = new CloudPoint(cloudPointData.get(0).intValue(), cloudPointData.get(1).intValue());
-    //         trackedObjects.add(new TrackedObject(stampedCloudPoints.getId(), currentTime, "Tracked from CloudPoints", Arrays.asList(cloudPoint)));
-    //     }
-    //     this.lastTrackedObjects = trackedObjects;
-    //     StatisticalFolder.incrementTrackedObjects(trackedObjects.size());
-    //     return new TrackedObjectsEvent(currentTime + frequency, trackedObjects);
-    // }
-
-
     @Override
     public String toString() {
         return "LiDARTrackerWorker{id=" + id + ", frequency=" + frequency + ", status=" + status + "}";
     }
+
+    public TrackedObjectsEvent DetectTotrackObject (DetectObjectsEvent event){
+        StampedDetectedObjects detectedObjects = event.getStampedDetectedObjects();
+        List<TrackedObject> trackedObjects = new ArrayList<>();
+        for (DetectedObject obj : detectedObjects.getDetectedObjects()) {
+                        TrackedObject trackedObject = trackObject(
+                                detectedObjects.getTime(),
+                                obj.getId(),
+                                obj.getDescription()
+        );
+        if (trackedObject != null) {
+                trackedObjects.add(trackedObject);
+        } else {
+            return new TrackedObjectsEvent(event.getTime(), null);
+        }         
+    }
+    return new TrackedObjectsEvent(event.getTime(), trackedObjects);
+}
 }
