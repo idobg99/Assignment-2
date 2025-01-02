@@ -35,7 +35,6 @@ class FusionSlamTest {
         StampedCloudPoints stampedPoints = new StampedCloudPoints(10, "object1", Arrays.asList(objPoint1, objPoint2));
         TrackedObject trackedObject = new TrackedObject(stampedPoints, "Test Object");
 
-        // Act
         LandMark result = fusionSlam.calculteLandMark(trackedObject, currentPose);
 
         // Assert

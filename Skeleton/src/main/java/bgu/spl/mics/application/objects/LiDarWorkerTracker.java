@@ -92,11 +92,7 @@ public class LiDarWorkerTracker {
         return "LiDARTrackerWorker{id=" + id + ", frequency=" + frequency + ", status=" + status + "}";
     }
 
-<<<<<<< Updated upstream
     public TrackedObjectsEvent DetectTotrackObject (DetectObjectsEvent event){
-=======
-    public TrackedObjectsEvent process (DetectObjectsEvent event){
->>>>>>> Stashed changes
         StampedDetectedObjects detectedObjects = event.getStampedDetectedObjects();
         List<TrackedObject> trackedObjects = new ArrayList<>();
         for (DetectedObject obj : detectedObjects.getDetectedObjects()) {
