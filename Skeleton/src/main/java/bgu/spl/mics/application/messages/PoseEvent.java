@@ -6,7 +6,7 @@ import bgu.spl.mics.application.objects.Pose;
 /**
  * Event representing the robot's pose (position and orientation).
  */
-public class PoseEvent implements Event<Void> {
+public class PoseEvent implements Event<String> {
     private final Pose pose; // Robot's pose including position, orientation, and time
 
     /**

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import bgu.spl.mics.application.messages.TrackedObjectsEvent;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -141,5 +143,23 @@ public class FusionSlam {
 
     public int getLastDetectionTime() {
         return this.lastDetectionTime;
+    }
+
+    public LandMark calculteLandMark(TrackedObject trackedObject, Pose currentPose) {    
+        if (currentPose == null) {
+                return null; }       
+        List<CloudPoint> coordinates = new ArrayList<>();
+        for (CloudPoint tobj : trackedObject.getCoordinates()) {
+            double xGlobal = currentPose.getX() + (tobj.getX() * Math.cos(Math.toRadians(currentPose.getYaw())) -
+                                                   tobj.getY() * Math.sin(Math.toRadians(currentPose.getYaw())));
+            double yGlobal = currentPose.getY() + (tobj.getX() * Math.sin(Math.toRadians(currentPose.getYaw())) +
+                                                   tobj.getY() * Math.cos(Math.toRadians(currentPose.getYaw())));
+            coordinates.add(new CloudPoint(xGlobal, yGlobal));
+        }
+
+        LandMark newLandmark = new LandMark(trackedObject.getId(),
+                                                    trackedObject.getDescription(),
+                                                    coordinates);
+         return newLandmark;
     }
 }

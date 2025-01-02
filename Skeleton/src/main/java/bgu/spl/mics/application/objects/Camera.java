@@ -9,6 +9,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import bgu.spl.mics.application.messages.CrashedBroadcast;
+import bgu.spl.mics.application.messages.DetectObjectsEvent;
+
 /**
  * Represents a camera sensor on the robot.
  * Responsible for detecting objects in the environment.
