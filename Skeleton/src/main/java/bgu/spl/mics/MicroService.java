@@ -181,7 +181,7 @@ public abstract class MicroService implements Runnable {
                     // Execute the callback
                     callback.call(message);
                 } else {
-                    System.err.println("No callback registered for message type: " + message.getClass().getSimpleName());
+                    System.out.println("No callback registered for message type: " + message.getClass().getSimpleName());
                 }
             }
 

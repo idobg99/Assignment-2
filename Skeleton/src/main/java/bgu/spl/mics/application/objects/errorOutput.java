@@ -19,9 +19,9 @@ public class errorOutput {
         //add error details
         JSONObject errorsDetails = new JSONObject();
         errorsDetails.put("Error source:", stats.getErrorLogs().get(0));
-        errorsDetails.put("Canera last frame:", stats.getlDetectedObjects());
+        errorsDetails.put("Canera last frame:", stats.getLastDetectedObjects());
         errorsDetails.put("Lidar Last Objects:","");
-        for (List<TrackedObject> list : stats.GetLastTrackedObject()){
+        for (List<TrackedObject> list : stats.getLastTrackedObjects()){
             for (TrackedObject object: list){
                 errorsDetails.put("",object.getId());
             }
@@ -38,10 +38,10 @@ public class errorOutput {
 
         // Add statistics
         JSONObject statistics = new JSONObject();
-        statistics.put("systemRuntime", stats.systemRuntime);
-        statistics.put("numDetectedObjects", stats.numDetectedObjects);
-        statistics.put("numTrackedObjects", stats.numTrackedObjects);
-        statistics.put("numLandmarks", stats.numLandmarks);
+        statistics.put("systemRuntime", stats.getSystemRuntime());
+        statistics.put("numDetectedObjects", stats.getNumDetectedObjects());
+        statistics.put("numTrackedObjects", stats.getNumTrackedObjects());
+        statistics.put("numLandmarks", stats.getNumLandmarks());
         output.put("Statistics:", statistics);
 
         // Write the JSON object to a file

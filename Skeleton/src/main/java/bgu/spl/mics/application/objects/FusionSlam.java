@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * Manages the fusion of sensor data for simultaneous localization and mapping (SLAM).
  * Combines data from multiple sensors (e.g., LiDAR, camera) to build and update a global map.
@@ -20,12 +23,15 @@ public class FusionSlam {
 
     private final List<LandMark> landmarks;
     private final List<Pose> previousPoses;
+    private Map<Integer, Pose> poses;
     private final ReadWriteLock lock;
+    private int lastDetectionTime = -1;
 
     private FusionSlam() { // private constructor for the singleton class
         landmarks = new ArrayList<>();
         lock = new ReentrantReadWriteLock();
         previousPoses = new ArrayList<>();
+        poses = new HashMap<>();
     }
 
     public static FusionSlam getInstance() {
@@ -76,6 +82,7 @@ public class FusionSlam {
         lock.writeLock().lock();
         try {
             previousPoses.add(pose);
+            poses.putIfAbsent(pose.getTime(), pose);
         }
         finally {
             lock.writeLock().unlock();
@@ -103,6 +110,20 @@ public class FusionSlam {
         }
     }
 
+    public Pose getPoseAt(int time) {
+        lock.readLock().lock();
+        try {
+            return poses.get(time);
+        } 
+        catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+        finally {
+            lock.readLock().unlock();
+        }
+    }
+
     // Clear all poses
     public void clearPoses() {
         lock.writeLock().lock();
@@ -112,5 +133,13 @@ public class FusionSlam {
         finally {
             lock.writeLock().unlock();
         }
+    }
+
+    public void setLastDetectionTime(int time) {
+        this.lastDetectionTime = time;
+    }
+
+    public int getLastDetectionTime() {
+        return this.lastDetectionTime;
     }
 }

@@ -2,7 +2,6 @@ package bgu.spl.mics.application.objects;
 
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -11,10 +10,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * the number of objects detected and tracked, and the number of landmarks identified.
  */
 public class StatisticalFolder {
-    public int systemRuntime = 0;
-    public int numDetectedObjects = 0;
-    public int numTrackedObjects = 0;
-    public int numLandmarks = 0;
+    private int systemRuntime = 0;
+    private int numDetectedObjects = 0;
+    private int numTrackedObjects = 0;
+    //private int numLandmarks = 0;
 
     // Added for error logs:
     private final List<String> errorLogs = new ArrayList<>(); 
@@ -62,14 +61,14 @@ public class StatisticalFolder {
         }
     }
 
-    public void incrementLandmarks() {
+    /*public void incrementLandmarks() {
         lock.lock();
         try {
             numLandmarks++;
         } finally {
             lock.unlock();
         }
-    }
+    }*/
 
     public void logError(String errorMessage) { // Added method for error logging
         lock.lock();
@@ -96,7 +95,7 @@ public class StatisticalFolder {
             System.out.println("System Runtime: " + systemRuntime);
             System.out.println("Detected Objects: " + numDetectedObjects);
             System.out.println("Tracked Objects: " + numTrackedObjects);
-            System.out.println("Landmarks Identified: " + numLandmarks);
+            System.out.println("Landmarks Identified: " + FusionSlam.getInstance().getAllLandmarks().length);
             if (!errorLogs.isEmpty()) {
                 System.out.println("Error Logs:");
                 for (String log : errorLogs) {
@@ -107,7 +106,7 @@ public class StatisticalFolder {
             lock.unlock();
         }
     }
-    
+
     public void addLastTrackedObject(List<TrackedObject> T){
         lock.lock();
         try {
@@ -117,15 +116,66 @@ public class StatisticalFolder {
         }       
     }
 
-    public List<List<TrackedObject>> GetLastTrackedObject(){
-        return lTrackedObjects;
+    public List<List<TrackedObject>> getLastTrackedObjects(){
+        lock.lock();
+        try {
+            return new ArrayList<>(lTrackedObjects); // Return a copy to avoid concurrency issues
+        } finally {
+            lock.unlock();
+        }
     }
 
-    public StampedDetectedObjects getlDetectedObjects() {
-        return this.lDetectedObjects;
+    public StampedDetectedObjects getLastDetectedObjects() {
+        lock.lock();
+        try {
+            return lDetectedObjects;
+        } finally {
+            lock.unlock();
+        }
     }
 
-    public void setlDetectedObjects(StampedDetectedObjects object){
-        this.lDetectedObjects = object;
+    public void setLastDetectedObjects(StampedDetectedObjects object){
+        lock.lock();
+        try {
+            this.lDetectedObjects = object;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public int getSystemRuntime() {
+        lock.lock();
+        try {
+            return systemRuntime;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public int getNumDetectedObjects() {
+        lock.lock();
+        try {
+            return numDetectedObjects;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public int getNumTrackedObjects() {
+        lock.lock();
+        try {
+            return numTrackedObjects;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public int getNumLandmarks() {
+        lock.lock();
+        try {
+            return FusionSlam.getInstance().getAllLandmarks().length;
+        } finally {
+            lock.unlock();
+        }
     }
 }

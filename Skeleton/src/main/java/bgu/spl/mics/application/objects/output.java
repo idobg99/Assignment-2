@@ -16,10 +16,10 @@ public class output {
 
         // Add statistics
         JSONObject statistics = new JSONObject();
-        statistics.put("systemRuntime", stats.systemRuntime);
-        statistics.put("numDetectedObjects", stats.numDetectedObjects);
-        statistics.put("numTrackedObjects", stats.numTrackedObjects);
-        statistics.put("numLandmarks", stats.numLandmarks);
+        statistics.put("systemRuntime", stats.getSystemRuntime());
+        statistics.put("numDetectedObjects", stats.getNumDetectedObjects());
+        statistics.put("numTrackedObjects", stats.getNumTrackedObjects());
+        statistics.put("numLandmarks", stats.getNumLandmarks());
         output.put("Statistics:", statistics);
 
         // Add world map landmarks

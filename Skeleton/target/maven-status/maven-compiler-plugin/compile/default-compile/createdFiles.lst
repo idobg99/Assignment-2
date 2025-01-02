@@ -8,7 +8,6 @@ bgu/spl/mics/MessageBusImpl.class
 bgu/spl/mics/application/messages/TickBroadcast.class
 bgu/spl/mics/MicroService.class
 bgu/spl/mics/application/messages/CrashedBroadcast.class
-bgu/spl/mics/application/messages/TerminateBroadcast.class
 bgu/spl/mics/application/services/FusionSlamService.class
 bgu/spl/mics/application/objects/TrackedObject.class
 bgu/spl/mics/application/objects/StampedDetectedObjects.class

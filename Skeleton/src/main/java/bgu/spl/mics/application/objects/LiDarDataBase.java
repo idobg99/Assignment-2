@@ -65,6 +65,7 @@ public class LiDarDataBase {
             StampedCloudPoints stampedCloudPoints = new StampedCloudPoints(time, id, cloudPoints);
             this.cloudPointsMap.computeIfAbsent(time, k -> new ArrayList<>()).add(stampedCloudPoints);
         }
+        lock.writeLock().unlock();
     }
 
     public void insertSingular(StampedCloudPoints stampedCloudPoints) {
@@ -94,11 +95,19 @@ public class LiDarDataBase {
      * @return A list of stamped cloud points at the given time.
      */
     public List<StampedCloudPoints> getStampedCloudPoints(int time) {
-        lock.readLock().lock(); // Acquire read lock
         try {
+            //System.out.println("WE ARE HERE **********************");
+            lock.readLock().lock(); // Acquire read lock
+            
             // Return a copy to avoid exposing internal state
             return new ArrayList<>(cloudPointsMap.getOrDefault(time, Collections.emptyList()));
-        } finally {
+        }
+         catch (Exception e)  {
+            System.out.println(e);
+            return null;
+        }
+         finally {
+            //System.out.println("WE ARE HERE2 **********************");
             lock.readLock().unlock(); // Release read lock
         }
     }

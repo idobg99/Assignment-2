@@ -104,4 +104,8 @@ public class GPSIMU {
         SingletonHolder.initialize();
         return SingletonHolder.INSTANCE;
     }
+
+    public int getLastPoseTime() {
+        return java.util.Collections.max(poseMap.keySet());
+    }
 }

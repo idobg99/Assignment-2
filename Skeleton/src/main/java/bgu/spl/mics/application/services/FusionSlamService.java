@@ -25,6 +25,8 @@ import java.util.List;
 public class FusionSlamService extends MicroService {
     private final FusionSlam fusionSlam;
 
+    
+
     /**
      * Constructor for FusionSlamService.
      *
@@ -53,7 +55,9 @@ public class FusionSlamService extends MicroService {
         // Handle TrackedObjectsEvent
         subscribeEvent(TrackedObjectsEvent.class, trackedObjectsEvent -> {
             List<TrackedObject> trackedObjects = trackedObjectsEvent.getTrackedObjects();
-            Pose currentPose = fusionSlam.getCurrentPose();
+            Pose currentPose = fusionSlam.getPoseAt(trackedObjectsEvent.getTime());
+
+            System.out.println("--------Time: " + trackedObjectsEvent.getTime() + ", Pose: " + currentPose);
 
             if (currentPose == null) {
                 System.err.println(getName() + " cannot process tracked objects: no current pose available.");
@@ -71,6 +75,9 @@ public class FusionSlamService extends MicroService {
                     double yGlobal = currentPose.getY() + (tobj.getX() * Math.sin(Math.toRadians(currentPose.getYaw())) +
                                                            tobj.getY() * Math.cos(Math.toRadians(currentPose.getYaw())));
                     coordinates.add(new CloudPoint(xGlobal, yGlobal));
+
+                    System.out.println("Local: (" + tobj.getX() + ", " + tobj.getY() + "), Pose: (" + currentPose.getX() + ", " + currentPose.getY() + ", " + currentPose.getYaw() + "), Global: (" + xGlobal + ", " + yGlobal + ")");
+
                 }
 
                 LandMark newLandmark = new LandMark(trackedObject.getId(),
@@ -82,6 +89,11 @@ public class FusionSlamService extends MicroService {
 
             // Complete the event
             complete(trackedObjectsEvent, null);
+
+            // Terminate simulatoin if detectionTime=lastTime
+            if (fusionSlam.getLastDetectionTime() == trackedObjectsEvent.getTime()) {
+                sendBroadcast(new TerminatedBroadcast());
+            }
         });
 
         // Handle TickBroadcast
@@ -105,4 +117,6 @@ public class FusionSlamService extends MicroService {
 
         System.out.println(getName() + " initialized.");
     }
+
+    
 }

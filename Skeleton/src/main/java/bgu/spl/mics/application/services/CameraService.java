@@ -25,7 +25,7 @@ public class CameraService extends MicroService {
     public CameraService(Camera camera) {
         super("CameraService-" + camera.getId());
         this.camera = camera;
-        this.lastProcessedTick = 0;
+        this.lastProcessedTick = 1;
         this.pendingEvents = new LinkedList<>();
     }
 
@@ -35,13 +35,10 @@ public class CameraService extends MicroService {
         subscribeBroadcast(TickBroadcast.class, (TickBroadcast tick) -> {
             int currentTick = tick.getTick();
 
-            System.out.println("TICKKKKKK _CAMERA - " + currentTick);
-
             // Process pending events from the queue
             while (!pendingEvents.isEmpty()) {
 
-                System.out.println("TEST PENDING QUEUE");
-
+                //System.out.println("TEST PENDING QUEUE");
 
                 DetectObjectsEvent event = pendingEvents.peek();
                 int detectionTime = event.getTime();
@@ -60,12 +57,7 @@ public class CameraService extends MicroService {
             if (currentTick > lastProcessedTick) {
                 StampedDetectedObjects detectedObjects = camera.getDetectedObjectsAt(currentTick);
 
-                
-
                 if (detectedObjects != null) {
-
-
-                    System.out.println("CAMERA DETECTED!!!!!!!!!!!!!!!! - " + detectedObjects.toString());
 
                     // Check for Error
                     for (DetectedObject d : detectedObjects.getDetectedObjects()) {
@@ -79,7 +71,6 @@ public class CameraService extends MicroService {
                             sendBroadcast(new CrashedBroadcast(camera.getId() + "found error in data"));
                         }
                     }
-
 
                     // Create a DetectObjectsEvent
                     DetectObjectsEvent event = new DetectObjectsEvent(detectedObjects);
@@ -107,7 +98,7 @@ public class CameraService extends MicroService {
         // Handle CrashedBroadcast
         subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
             System.err.println(getName() + " received crash notification: " + crashedBroadcast.getReason());
-            statisticalFolder.setlDetectedObjects(camera.GetLastDetectedObjects());
+            statisticalFolder.setLastDetectedObjects(camera.GetLastDetectedObjects());
             terminate();
             // Perform any cleanup or map adjustment due to crash
         });

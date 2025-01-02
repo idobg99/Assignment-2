@@ -43,7 +43,6 @@ public class Camera {
     }
 
     public Map<Integer, StampedDetectedObjects> parseDetectedObjects(JsonNode detectedData) {
-        System.out.println("TESTO THE TEST");
         Map<Integer, StampedDetectedObjects> map = new HashMap<>();
         for (JsonNode entry : detectedData) {
             int time = entry.get("time").asInt();
@@ -53,7 +52,6 @@ public class Camera {
                 String description = obj.get("description").asText();
                 objects.add(new DetectedObject(id, description));
             }
-            System.out.println("TESTIMG PARSE FOR CAMERA time = " + time);
             map.put(time, new StampedDetectedObjects(time, objects));
         }
         return map;
@@ -68,6 +66,13 @@ public class Camera {
     public StampedDetectedObjects getDetectedObjectsAt(int currentTime) {
         this.lastObjects = detectedObjectsMap.get(currentTime);
         return this.lastObjects;
+    }
+
+    public int getLastDetectionTime(){
+        if (detectedObjectsMap.isEmpty()) {
+            return -1; // Return a default value if the map is empty
+        }
+        return java.util.Collections.max(detectedObjectsMap.keySet());
     }
 
     public int getId() {

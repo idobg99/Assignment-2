@@ -1,7 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.TerminateBroadcast;
+import bgu.spl.mics.application.messages.TerminatedBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.StatisticalFolder;
 
@@ -35,7 +35,7 @@ public class TimeService extends MicroService {
     @Override
     protected void initialize() {
         // Subscribe to TerminateBroadcast with a lambda exp for the callback CHECK CALLBACK
-        subscribeBroadcast(TerminateBroadcast.class, (TerminateBroadcast terminate) -> {
+        subscribeBroadcast(TerminatedBroadcast.class, (TerminatedBroadcast terminate) -> {
             System.out.println(getName() + " received termination signal. Shutting down.");
             terminate();
         });
@@ -55,9 +55,9 @@ public class TimeService extends MicroService {
                 }
 
                 // Send a TerminateBroadcast after all ticks
-                sendBroadcast(new TerminateBroadcast());
+                sendBroadcast(new TerminatedBroadcast());
 
-                System.out.println("TEST HEREEEEEEEEEEEEEEEEEEEE");
+                //System.out.println("TEST HEREEEEEEEEEEEEEEEEEEEE");
 
                 // Signal this service to terminate
                 terminate();

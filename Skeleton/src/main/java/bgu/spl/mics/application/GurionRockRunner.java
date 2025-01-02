@@ -54,6 +54,9 @@ public class GurionRockRunner {
             String PoseDataPath = rootNode.path("poseJsonFile").asText(); 
             gps.Update(directory+ "/pose_data.json");  //change it to PoseDataPath if the path wil be correct.
             threadPool.submit(new PoseService(gps));
+
+            FusionSlam.getInstance().setLastDetectionTime(GPSIMU.getInstance().getLastPoseTime());
+
             threadPool.submit(new FusionSlamService(FusionSlam.getInstance()));
 
             // Initializing the LiDAR DB:   
@@ -75,7 +78,7 @@ public class GurionRockRunner {
 
                 //System.out.println("CAMERAKEY: " + cameraKey);
 
-                JsonNode detectedData = cameraData.path(cameraKey); // List of the stamped obj
+                JsonNode detectedData = cameraData.path(cameraKey); // List of the stamped objects
                 Camera camera = new Camera(id, frequency,detectedData);
 
                 System.out.println("CAMERA - " + camera.getId());
@@ -123,7 +126,7 @@ public class GurionRockRunner {
         
 
         //creating outputFile:
-        File outputFile = new File(directory, " output_file.json");
+        File outputFile = new File(directory, "output_file_new.json");
         if (!StatisticalFolder.getInstance().getErrorLogs().isEmpty()){
             errorOutput.generateOutputFile(outputFile.getAbsolutePath());
         }
