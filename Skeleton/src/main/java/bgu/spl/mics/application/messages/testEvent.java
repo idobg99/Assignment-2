@@ -1,9 +1,6 @@
 package bgu.spl.mics.application.messages;
-package bgu.spl.mics.application.messages;
 
 import bgu.spl.mics.Event;
-import java.util.Arrays;
-
 
 public class testEvent implements Event<String> {
 
