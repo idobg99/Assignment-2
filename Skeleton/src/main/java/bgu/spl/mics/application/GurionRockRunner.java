@@ -36,15 +36,9 @@ public class GurionRockRunner {
      * @param args Command-line arguments. The first argument is expected to be the path to the configuration file.
      */
 
-    //  {
-    //     "id": "ERROR",
-    //     "description": "GLaDOS has repurposed the robot to conduct endless cake-fetching tests. Success is a lie."
-    // },
-
     //pathes to insert input files:
     ///usr/bin/env /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -cp /tmp/cp_46t2ak5l8nahg3aighn8giltk.jar bgu.spl.mics.application.GurionRockRunner /workspaces/Assignment-2/Skeleton/example_input/configuration_file.json
     ///usr/bin/env /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -cp /tmp/cp_46t2ak5l8nahg3aighn8giltk.jar bgu.spl.mics.application.GurionRockRunner /workspaces/Assignment-2/Skeleton/example_input_2/configuration_file.json
-    /// /usr/bin/env /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -cp /tmp/cp_56kv5ow7f0lcyays5dp23sn96.jar bgu.spl.mics.application.GurionRockRunner /workspaces/Assignment-2/Skeleton/example_input_2/configuration_file.json
     public static void main(String[] args) {
         String config_file = args[0];  
         File inputfile = new File(config_file);
@@ -55,14 +49,11 @@ public class GurionRockRunner {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(new File(config_file));
 
-            
-
             // Initializing the LiDAR DB:   
             String LidarDataPath = rootNode.path("LiDarWorkers").path("lidars_data_path").asText();
             LiDarDataBase lidarDataBase = LiDarDataBase.getInstance();
             lidarDataBase.insertWithFile(directory+ "/lidar_data.json");  //change it to LidarDataPath if the path wil be correct.          
             
-
             // Parse Cameras:
             JsonNode cameraConfig = rootNode.path("Cameras").path("CamerasConfigurations");
             String cameraDataPath = rootNode.path("Cameras").path("camera_datas_path").asText();
@@ -80,7 +71,7 @@ public class GurionRockRunner {
                 Camera camera = new Camera(id, frequency,detectedData);
 
                 System.out.println("CAMERA - " + camera.getId());
-
+                
                 threadPool.submit(new CameraService(camera));
             } 
             
@@ -102,9 +93,9 @@ public class GurionRockRunner {
             gps.Update(directory+ "/pose_data.json");  //change it to PoseDataPath if the path wil be correct.
             threadPool.submit(new PoseService(gps));
 
-            System.out.println("STARTO********************** " + Camera.LAST_DETECTED_OBJECT_TIME);
+            System.out.println("STARTO********************** " + Camera.TOTAL_DETECTED_OBJECTS);
 
-            FusionSlam.getInstance().setLastDetectionTime(Camera.LAST_DETECTED_OBJECT_TIME);
+            FusionSlam.getInstance().setLastDetection(Camera.TOTAL_DETECTED_OBJECTS);
 
             threadPool.submit(new FusionSlamService(FusionSlam.getInstance()));
 
@@ -136,11 +127,13 @@ public class GurionRockRunner {
         
 
         //creating outputFile:
-        File outputFile = new File(directory, "output_file_new2.json");
+        File outputFile = new File(directory, "output_file_new.json");
         if (!StatisticalFolder.getInstance().getErrorLogs().isEmpty()){
-            errorOutput.generateOutputFile(outputFile.getAbsolutePath());      
+            System.out.println("ERR");
+            errorOutput.generateOutputFile(outputFile.getAbsolutePath());
         }
         else{
+            System.out.println("OUT");
             output.generateOutputFile(outputFile.getAbsolutePath());
         }        
     }

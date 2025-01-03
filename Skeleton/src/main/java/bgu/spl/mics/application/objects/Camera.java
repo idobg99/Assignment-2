@@ -20,7 +20,7 @@ public class Camera {
     private final  Map<Integer,StampedDetectedObjects> detectedObjectsMap;  // List of detected objects with availability times
     private StampedDetectedObjects lastObjects = null;
 
-    public static int LAST_DETECTED_OBJECT_TIME = -1;
+    public static int TOTAL_DETECTED_OBJECTS = 0;
 
     public Camera(int id, int frequency,JsonNode detectedData ) {
         this.id = id;
@@ -56,16 +56,18 @@ public class Camera {
             }
             map.put(time, new StampedDetectedObjects(time, objects));
 
-            if (time > Camera.LAST_DETECTED_OBJECT_TIME) {
+            Camera.TOTAL_DETECTED_OBJECTS += objects.size();
+
+            /*if (time > Camera.TOTAL_DETECTED_OBJECTS) {
                 setLastDetectedTime(time);
-            }
+            }*/
         }
         return map;
     }
 
-    private static void setLastDetectedTime(int time) {
-        Camera.LAST_DETECTED_OBJECT_TIME = time;
-    }
+    /*private static void setLastDetectedTime(int time) {
+        Camera.TOTAL_DETECTED_OBJECTS = time;
+    }*/
 
     /**
      * Retrieves all detected objects available at a specific tick.

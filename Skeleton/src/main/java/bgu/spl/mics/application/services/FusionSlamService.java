@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class FusionSlamService extends MicroService {
     private final FusionSlam fusionSlam;
-
+    private int numOfDetected = 0;
     
 
     /**
@@ -84,24 +84,29 @@ public class FusionSlamService extends MicroService {
                                                     trackedObject.getDescription(),
                                                     coordinates);
                 fusionSlam.insertLandmark(newLandmark);
+                this.numOfDetected++;
                 System.out.println(getName() + " added landmark: " + newLandmark);
             }
 
             // Complete the event
             complete(trackedObjectsEvent, null);
 
-            /*// Terminate simulatoin if detectionTime=lastTime
-            if (fusionSlam.getLastDetectionTime() == trackedObjectsEvent.getTime()) {
+            // Terminate simulatoin if services are finished
+            if (fusionSlam.getLastDetection() == this.numOfDetected) {
 
                 System.out.print("FINITO**************************** " + trackedObjectsEvent.getTime());
                 sendBroadcast(new TerminatedBroadcast());
-            }*/
+            }
         });
 
         // Handle TickBroadcast
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
             // Perform periodic updates or maintenance tasks
-            System.out.println(getName() + " received tick: " + tickBroadcast.getTick());
+            System.out.println(getName() + " received tick: " + tickBroadcast.getTick() + "->" + this.numOfDetected);
+
+            if (fusionSlam.getLastDetection() == this.numOfDetected) {
+                sendBroadcast(new TerminatedBroadcast());
+            }
         });
 
         // Handle TerminatedBroadcast

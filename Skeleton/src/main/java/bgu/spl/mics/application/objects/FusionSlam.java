@@ -24,7 +24,7 @@ public class FusionSlam {
     private final List<Pose> previousPoses;
     private Map<Integer, Pose> poses;
     private final ReadWriteLock lock;
-    private int lastDetectionTime = -1;
+    private int lastDetection = -1;
 
     private FusionSlam() { // private constructor for the singleton class
         landmarks = new ArrayList<>();
@@ -164,12 +164,12 @@ public class FusionSlam {
         }
     }
 
-    public void setLastDetectionTime(int time) {
-        this.lastDetectionTime = time;
+    public void setLastDetection(int num) {
+        this.lastDetection = num;
     }
 
-    public int getLastDetectionTime() {
-        return this.lastDetectionTime;
+    public int getLastDetection() {
+        return this.lastDetection;
     }
     public LandMark calculteLandMark(TrackedObject trackedObject, Pose currentPose) {    
         if (currentPose == null) {
