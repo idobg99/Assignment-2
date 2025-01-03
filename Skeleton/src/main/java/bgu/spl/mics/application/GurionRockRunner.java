@@ -36,9 +36,15 @@ public class GurionRockRunner {
      * @param args Command-line arguments. The first argument is expected to be the path to the configuration file.
      */
 
+    //  {
+    //     "id": "ERROR",
+    //     "description": "GLaDOS has repurposed the robot to conduct endless cake-fetching tests. Success is a lie."
+    // },
+
     //pathes to insert input files:
     ///usr/bin/env /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -cp /tmp/cp_46t2ak5l8nahg3aighn8giltk.jar bgu.spl.mics.application.GurionRockRunner /workspaces/Assignment-2/Skeleton/example_input/configuration_file.json
     ///usr/bin/env /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -cp /tmp/cp_46t2ak5l8nahg3aighn8giltk.jar bgu.spl.mics.application.GurionRockRunner /workspaces/Assignment-2/Skeleton/example_input_2/configuration_file.json
+    /// /usr/bin/env /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -cp /tmp/cp_56kv5ow7f0lcyays5dp23sn96.jar bgu.spl.mics.application.GurionRockRunner /workspaces/Assignment-2/Skeleton/example_input_2/configuration_file.json
     public static void main(String[] args) {
         String config_file = args[0];  
         File inputfile = new File(config_file);
@@ -130,9 +136,9 @@ public class GurionRockRunner {
         
 
         //creating outputFile:
-        File outputFile = new File(directory, "output_file_new.json");
+        File outputFile = new File(directory, "output_file_new2.json");
         if (!StatisticalFolder.getInstance().getErrorLogs().isEmpty()){
-            errorOutput.generateOutputFile(outputFile.getAbsolutePath());
+            errorOutput.generateOutputFile(outputFile.getAbsolutePath());      
         }
         else{
             output.generateOutputFile(outputFile.getAbsolutePath());

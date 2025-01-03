@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------------
+Test set: LiDarWorkerTrackerTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 11.04 s <<< FAILURE! -- in LiDarWorkerTrackerTest
+LiDarWorkerTrackerTest.testDetectTotrackObject_ValidInput -- Time elapsed: 11.02 s <<< ERROR!
+java.lang.NullPointerException
+	at LiDarWorkerTrackerTest.testDetectTotrackObject_ValidInput(LiDarWorkerTrackerTest.java:49)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at java.util.ArrayList.forEach(ArrayList.java:1259)
+	at java.util.ArrayList.forEach(ArrayList.java:1259)
+
+LiDarWorkerTrackerTest.testDetectTotrackObject_NoMatch -- Time elapsed: 0.005 s <<< ERROR!
+java.lang.NullPointerException
+	at LiDarWorkerTrackerTest.testDetectTotrackObject_NoMatch(LiDarWorkerTrackerTest.java:91)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at java.util.ArrayList.forEach(ArrayList.java:1259)
+	at java.util.ArrayList.forEach(ArrayList.java:1259)
+

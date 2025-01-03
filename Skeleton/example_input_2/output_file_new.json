@@ -1,0 +1,23 @@
+{
+    "errorsDetails:": {
+        "Error source:": "{CAMERA-1: Found - ERROR in data at time - 8}",
+        "": "Circular_Base_1",
+        "Lidar Last Objects:": "",
+        "Canera last frame:": "StampedDetectedObjects{time=8, detectedObjects=[DetectedObject{id='Chair_Base_2', description='A Blue Chair with wooden legs'}, DetectedObject{id='ERROR', description='GLaDOS has repurposed the robot to conduct endless cake-fetching tests. Success is a lie.'}, DetectedObject{id='furniture_3', description='Bed'}]}"
+    },
+    "Statistics:": {
+        "numTrackedObjects": 17,
+        "numLandmarks": 9,
+        "systemRuntime": 8,
+        "numDetectedObjects": 29
+    },
+    "Poses:": {"": [
+        {"id": "Pose{position=0.0,0.0, yaw=0.0, time=1}"},
+        {"id": "Pose{position=-3.2076,0.0755, yaw=-87.49, time=2}"},
+        {"id": "Pose{position=-5.7074,0.1484, yaw=-92.65, time=3}"},
+        {"id": "Pose{position=-4.953,1.3106, yaw=144.04, time=4}"},
+        {"id": "Pose{position=-4.817,2.8094, yaw=132.58, time=5}"},
+        {"id": "Pose{position=-3.16,3.1058, yaw=-11.34, time=6}"},
+        {"id": "Pose{position=-2.366,0.9327, yaw=-28.07, time=7}"}
+    ]}
+}
