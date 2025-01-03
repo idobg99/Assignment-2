@@ -59,10 +59,10 @@ public class LiDarWorkerTracker {
                         lastTrackedObjects.add(trackedObject);
                         return trackedObject;
                     }
-                }
-                statisticalFolder.logError("{LiDAR-" + this.id + ": Error Not Found - " + id + 
-                                                            " in data at time - " + time + "}");
+                }                
             }
+            statisticalFolder.logError("{LiDAR-" + this.id + ": Error Not Found - " + id + 
+                                                            " in data at time - " + time + "}");
             
             return null;
         } finally {
@@ -107,6 +107,7 @@ public class LiDarWorkerTracker {
     public String toString() {
         return "LiDARTrackerWorker{id=" + id + ", frequency=" + frequency + ", status=" + status + "}";
     }
+
     public TrackedObjectsEvent DetectTotrackObject (DetectObjectsEvent event){
         StampedDetectedObjects detectedObjects = event.getStampedDetectedObjects();
         List<TrackedObject> trackedObjects = new ArrayList<>();
@@ -118,10 +119,34 @@ public class LiDarWorkerTracker {
         );
         if (trackedObject != null) {
                 trackedObjects.add(trackedObject);
-        } else {
-            return new TrackedObjectsEvent(event.getTime(), null);
+        // } else {
+        //     return null;
         }         
     }
     return new TrackedObjectsEvent(event.getTime(), trackedObjects);
 }
+
+
+public TrackedObjectsEvent DetectTotrackObject2(DetectObjectsEvent event) {
+    if (event == null || event.getStampedDetectedObjects() == null) {
+        // Handle null inputs appropriately
+        return null;
+    }
+
+    StampedDetectedObjects detectedObjects = event.getStampedDetectedObjects();
+    List<TrackedObject> trackedObjects = new ArrayList<>();
+
+    for (DetectedObject obj : detectedObjects.getDetectedObjects()) {
+        List<StampedCloudPoints> pointsList = lidarDB.getStampedCloudPoints(detectedObjects.getTime());
+                for (StampedCloudPoints point : pointsList) {                   
+                    if (point.getId().equals(obj.getId())) {
+                        TrackedObject trackedObject = new TrackedObject(point, obj.getDescription());
+                        lastTrackedObjects.add(trackedObject);
+                        trackedObjects.add(trackedObject);
+                    }
+                }        
+    }
+    return new TrackedObjectsEvent(event.getTime(), trackedObjects);
+}
+
 }
