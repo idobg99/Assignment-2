@@ -48,6 +48,7 @@ bgu/spl/mics/application/objects/errorOutput.class
 bgu/spl/mics/application/objects/StatisticalFolder$SingletonHolder.class
 bgu/spl/mics/Future.class
 bgu/spl/mics/application/objects/Camera.class
+bgu/spl/mics/application/messages/testEvent.class
 bgu/spl/mics/application/objects/GPSIMU$1.class
 bgu/spl/mics/application/services/TimeService.class
 bgu/spl/mics/example/messages/ExampleBroadcast.class

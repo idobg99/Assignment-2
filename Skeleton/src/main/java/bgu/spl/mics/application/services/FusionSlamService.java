@@ -57,10 +57,10 @@ public class FusionSlamService extends MicroService {
             List<TrackedObject> trackedObjects = trackedObjectsEvent.getTrackedObjects();
             Pose currentPose = fusionSlam.getPoseAt(trackedObjectsEvent.getTime());
 
-            System.out.println("--------Time: " + trackedObjectsEvent.getTime() + ", Pose: " + currentPose);
+            //System.out.println("--------Time: " + trackedObjectsEvent.getTime() + ", Pose: " + currentPose);
 
-            if (currentPose == null) {
-                System.err.println(getName() + " cannot process tracked objects: no current pose available.");
+            if (currentPose == null || trackedObjects == null || trackedObjects.isEmpty()) {
+                System.out.println(getName() + " cannot process tracked objects: no current pose or objects available.");
                 complete(trackedObjectsEvent, null);
                 return;
             }
@@ -70,6 +70,7 @@ public class FusionSlamService extends MicroService {
                 List<CloudPoint> coordinates = new ArrayList<>();
 
                 for (CloudPoint tobj : trackedObject.getCoordinates()) {
+                    //System.out.println("THIS ONE - x: " + tobj.getX() + " Y: " + tobj.getY());
                     double xGlobal = currentPose.getX() + (tobj.getX() * Math.cos(Math.toRadians(currentPose.getYaw())) -
                                                            tobj.getY() * Math.sin(Math.toRadians(currentPose.getYaw())));
                     double yGlobal = currentPose.getY() + (tobj.getX() * Math.sin(Math.toRadians(currentPose.getYaw())) +
@@ -89,12 +90,12 @@ public class FusionSlamService extends MicroService {
             // Complete the event
             complete(trackedObjectsEvent, null);
 
-            // Terminate simulatoin if detectionTime=lastTime
+            /*// Terminate simulatoin if detectionTime=lastTime
             if (fusionSlam.getLastDetectionTime() == trackedObjectsEvent.getTime()) {
 
                 System.out.print("FINITO**************************** " + trackedObjectsEvent.getTime());
                 sendBroadcast(new TerminatedBroadcast());
-            }
+            }*/
         });
 
         // Handle TickBroadcast

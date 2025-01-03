@@ -7,9 +7,9 @@ import java.util.*;
  */
 public class LandMark {
 
-    private final String id;
-    private final String description;
-    private final List<CloudPoint> coordinates;
+    private String id;
+    private String description;
+    private List<CloudPoint> coordinates;
 
     public LandMark (String id, String description, List<CloudPoint> coordinates) {
         this.id = id;
@@ -25,7 +25,11 @@ public class LandMark {
         return description;
     }
 
+    public void setCoordinates(List<CloudPoint> coordinates) {
+        this.coordinates = coordinates;
+    }
+
     public List<CloudPoint> getCoordinates() {
-        return Collections.unmodifiableList(coordinates);
+        return coordinates;
     }
 }

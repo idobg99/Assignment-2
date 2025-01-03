@@ -1,13 +1,12 @@
 package bgu.spl.mics.application.objects;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 //import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import bgu.spl.mics.application.messages.TrackedObjectsEvent;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * Manages the fusion of sensor data for simultaneous localization and mapping (SLAM).
@@ -38,19 +37,49 @@ public class FusionSlam {
         return FusionSlamHolder.INSTANCE;
     }
 
-    // Insert a landmark into the landmarks array with collision handling
-    public void insertLandmark(LandMark landmark) {
+    // Insert a landmark into the landmarks array with collision handling and coordinate averaging
+    public void insertLandmark(LandMark newLandmark) {
         lock.writeLock().lock();
         try {
             for (int i = 0; i < landmarks.size(); i++) {
-                if (landmarks.get(i).getId().equals(landmark.getId())) {
-                    landmarks.set(i, landmark);
-                    return;
+                LandMark existingLandmark = landmarks.get(i);
+
+                // Check for collision (matching IDs)
+                if (existingLandmark.getId().equals(newLandmark.getId())) {
+                    List<CloudPoint> existingCoordinates = existingLandmark.getCoordinates();
+                    List<CloudPoint> newCoordinates = newLandmark.getCoordinates();
+
+                    // Average coordinates
+                    int size = Math.min(existingCoordinates.size(), newCoordinates.size());
+                    for (int j = 0; j < size; j++) {
+                        CloudPoint existingPoint = existingCoordinates.get(j);
+                        CloudPoint newPoint = newCoordinates.get(j);
+
+                        // Calculate averaged coordinates
+                        double averagedX = (existingPoint.getX() + newPoint.getX()) / 2;
+                        double averagedY = (existingPoint.getY() + newPoint.getY()) / 2;
+
+                        // Update existing point
+                        existingPoint.setX(averagedX);
+                        existingPoint.setY(averagedY);
+                    }
+
+                    // Add any remaining new points to the existing coordinates
+                    if (newCoordinates.size() > existingCoordinates.size()) {
+                        for (int j = size; j < newCoordinates.size(); j++) {
+                            existingCoordinates.add(newCoordinates.get(j));
+                        }
+                    }
+
+                    // Update the existing landmark
+                    existingLandmark.setCoordinates(existingCoordinates);
+                    return; // Exit after updating
                 }
             }
-            landmarks.add(landmark);
-        }
-        finally {
+
+            // If no collision, add the new landmark
+            landmarks.add(newLandmark);
+        } finally {
             lock.writeLock().unlock();
         }
     }
