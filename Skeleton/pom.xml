@@ -137,7 +137,7 @@
                                     <exclude>META-INF/LICENSE</exclude>
                                     <exclude>META-INF/NOTICE</exclude>
                                     <exclude>META-INF/versions/**</exclude>
-                                    <exclude>META-INF/MANIFEST.MF</exclude>
+                                    <!--<exclude>META-INF/MANIFEST.MF</exclude>-->
                                     <!--<exclude> META-INF/**</exclude> -->
                                     <exclude>module-info.class</exclude>
                                 </excludes>

@@ -57,10 +57,15 @@ public class FusionSlamService extends MicroService {
             List<TrackedObject> trackedObjects = trackedObjectsEvent.getTrackedObjects();
             Pose currentPose = fusionSlam.getPoseAt(trackedObjectsEvent.getTime());
 
+            if (trackedObjectsEvent.getTrackedObjects() == null || trackedObjectsEvent.getTrackedObjects().isEmpty()) {
+                System.out.println(getName() + " GOT NO AVAILABLE TRACKEDOBJECTS IN EVENT: " + trackedObjectsEvent.getTime());
+                return;
+            }
+
             //System.out.println("--------Time: " + trackedObjectsEvent.getTime() + ", Pose: " + currentPose);
 
-            if (currentPose == null || trackedObjects == null || trackedObjects.isEmpty()) {
-                System.out.println(getName() + " cannot process tracked objects: no current pose or objects available.");
+            if (currentPose == null) {
+                System.out.println(getName() + " GOT NO AVAILABLE POSE AT TIME: " + trackedObjectsEvent.getTime());
                 complete(trackedObjectsEvent, null);
                 return;
             }
@@ -94,7 +99,7 @@ public class FusionSlamService extends MicroService {
             // Terminate simulatoin if services are finished
             if (fusionSlam.getLastDetection() == this.numOfDetected) {
 
-                System.out.print("FINITO**************************** " + trackedObjectsEvent.getTime());
+                System.out.print("FINSHED EARLY - " + trackedObjectsEvent.getTime());
                 sendBroadcast(new TerminatedBroadcast());
             }
         });
