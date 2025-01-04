@@ -185,7 +185,7 @@ public abstract class MicroService implements Runnable {
                 }
             }
 
-            System.out.println(getName() + " TERMINATED");
+            System.out.println(getName() + " terminated gracefully.");
 
         } catch (Exception e) {
             System.out.println(e);
