@@ -114,13 +114,7 @@ public class GurionRockRunner {
                 Thread.currentThread().interrupt(); // Preserve interrupt status
                 System.err.println("Thread pool interrupted while waiting for termination.");
             }
-
-            System.out.println("SHUTDOWN");
-            // if (threadPool.awaitTermination(10, TimeUnit.SECONDS)) {
-            //     System.out.println("All tasks have finished.");
-            // } else {
-            //     System.out.println("Timeout: Some tasks may not have finished.");
-            // }  
+            
         } catch (Exception e) {
             System.err.println("Error reading JSON file: " + e.getMessage());
         }

@@ -52,8 +52,6 @@ public class LiDarService extends MicroService {
                 DetectObjectsEvent event = pendingTrackedEvents.peek();
                 int detectionTime = event.getTime();
 
-                System.out.println("TTTTTTTTTTTTTHHHHHHHHHEEEEEEEEEEE TIME IS: " + detectionTime);
-
                 // Check if the event is ready to be processed
                 if (currentTick - lidarWorker.getFrequency() >= detectionTime) {
                     StampedDetectedObjects detectedObjects = event.getStampedDetectedObjects();
@@ -65,8 +63,6 @@ public class LiDarService extends MicroService {
                                 obj.getId(),
                                 obj.getDescription()
                         );
-
-                        System.out.println("-------------------- LIDARIO THE LIDAR: item - " + obj.getId() + " time - " + detectedObjects.getTime());
 
                         if (trackedObject != null) {
                             trackedObjects.add(trackedObject);
@@ -98,43 +94,7 @@ public class LiDarService extends MicroService {
 
         // Handle DetectObjectsEvent
         subscribeEvent(DetectObjectsEvent.class, event -> {
-            /*if (lidarWorker.getFrequency() == 0) {
-                StampedDetectedObjects detectedObjects = event.getStampedDetectedObjects();
-
-                //System.out.println("LIDAR THE MAN@@@@@@ - ");
-
-                List<TrackedObject> trackedObjects = new ArrayList<>();
-                for (DetectedObject obj : detectedObjects.getDetectedObjects()) {
-
-                    //System.out.println("THE LIDAR BOY - " + obj.getId() + " time - "  + detectedObjects.getTime());
-
-                    TrackedObject trackedObject = lidarWorker.trackObject(
-                            detectedObjects.getTime(),
-                            obj.getId(),
-                            obj.getDescription()
-                    );
-
-                    if (trackedObject != null) {
-                        trackedObjects.add(trackedObject);
-                    } else {
-                        System.out.println(getName() + " FAILED to track object: " + obj.getId());
-                        complete(event, false);
-                        sendBroadcast(new CrashedBroadcast(lidarWorker.getId() + " found error in data"));
-                    }
-                }
-
-                TrackedObjectsEvent trackedEvent = new TrackedObjectsEvent(event.getTime(), trackedObjects);
-
-                // Send event
-                sendEvent(trackedEvent);
-                complete(event, true);
-
-                // Update statistics
-                statfolder.incrementTrackedObjects(trackedObjects.size());
-                System.out.println(getName() + " sent TrackedObjectsEvent: " + trackedEvent);
-            } else {*/
             pendingTrackedEvents.offer(event);
-            //}
         });
         // Handle TerminatedBroadcast
         subscribeBroadcast(TerminatedBroadcast.class, terminatedBroadcast -> {
