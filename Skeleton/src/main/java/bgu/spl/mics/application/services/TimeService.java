@@ -36,7 +36,6 @@ public class TimeService extends MicroService {
     @Override
     protected void initialize() {
         
-
         // Launch the ticking thread
         Thread tickingThread = new Thread(() -> {
             try {
@@ -53,8 +52,6 @@ public class TimeService extends MicroService {
 
                 // Send a TerminateBroadcast after all ticks
                 sendBroadcast(new TerminatedBroadcast());
-
-                //System.out.println("TEST HEREEEEEEEEEEEEEEEEEEEE");
 
                 // Signal this service to terminate
                 terminate();
@@ -78,7 +75,6 @@ public class TimeService extends MicroService {
         });
 
         tickingThread.start();
-
         System.out.println(getName() + " Initialized");
     }
 }

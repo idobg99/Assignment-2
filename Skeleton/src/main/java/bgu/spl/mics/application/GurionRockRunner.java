@@ -137,7 +137,7 @@ public class GurionRockRunner {
         
 
         //creating outputFile:
-        File outputFile = new File(directory, "output_file_new.json");
+        File outputFile = new File(directory, "output_file.json");
         if (!StatisticalFolder.getInstance().getErrorLogs().isEmpty()){
             errorOutput.generateOutputFile(outputFile.getAbsolutePath());
         }
