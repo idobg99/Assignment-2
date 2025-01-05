@@ -38,7 +38,7 @@ public class CameraService extends MicroService {
             // Process pending events from the queue
             while (!pendingEvents.isEmpty()) {
 
-                //System.out.println("TEST PENDING QUEUE");
+                System.out.println("TEST PENDING QUEUE");
 
                 DetectObjectsEvent event = pendingEvents.peek();
                 int detectionTime = event.getTime();
