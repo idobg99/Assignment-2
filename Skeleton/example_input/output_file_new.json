@@ -1,9 +1,108 @@
 {
     "Statistics:": {
-        "numTrackedObjects": 0,
-        "numLandmarks": 0,
-        "systemRuntime": 30,
+        "numTrackedObjects": 13,
+        "numLandmarks": 7,
+        "systemRuntime": 21,
         "numDetectedObjects": 13
     },
-    "World Map": {"landMarks": []}
+    "World Map": {"landMarks": [
+        {
+            "coordinates": [
+                {
+                    "x": -1.2604381730619276,
+                    "y": 3.1241259638688392
+                },
+                {
+                    "x": -1.30386567336052,
+                    "y": 2.943818875252933
+                }
+            ],
+            "description": "Wall",
+            "id": "Wall_1"
+        },
+        {
+            "coordinates": [
+                {
+                    "x": -2.6882128061660775,
+                    "y": 5.785468338906705
+                },
+                {
+                    "x": -2.852941210565856,
+                    "y": 5.763747981511329
+                }
+            ],
+            "description": "Wall",
+            "id": "Wall_3"
+        },
+        {
+            "coordinates": [
+                {
+                    "x": 0.037252754579296,
+                    "y": 6.086392177768409
+                },
+                {
+                    "x": 0.16704581131861662,
+                    "y": 5.750205202974233
+                }
+            ],
+            "description": "Chair Base",
+            "id": "Chair_Base_1"
+        },
+        {
+            "coordinates": [
+                {
+                    "x": 1.1887388069131424,
+                    "y": 5.046603439915288
+                },
+                {
+                    "x": 1.2533775970735481,
+                    "y": 5.113604250078963
+                }
+            ],
+            "description": "Wall",
+            "id": "Wall_4"
+        },
+        {
+            "coordinates": [
+                {
+                    "x": 3.24681444648283,
+                    "y": 5.632105040023369
+                },
+                {
+                    "x": 3.2171102675994687,
+                    "y": 5.904919272511438
+                }
+            ],
+            "description": "Circular Base",
+            "id": "Circular_Base_1"
+        },
+        {
+            "coordinates": [
+                {
+                    "x": -2.913332641549164,
+                    "y": -1.1554635423248856
+                },
+                {
+                    "x": -2.742786059628742,
+                    "y": -1.4731329670343793
+                }
+            ],
+            "description": "Door",
+            "id": "Door"
+        },
+        {
+            "coordinates": [
+                {
+                    "x": 0.8142376336133172,
+                    "y": 1.71389530643078
+                },
+                {
+                    "x": 0.8500729810642835,
+                    "y": 1.68420660980016
+                }
+            ],
+            "description": "Wall",
+            "id": "Wall_5"
+        }
+    ]}
 }
