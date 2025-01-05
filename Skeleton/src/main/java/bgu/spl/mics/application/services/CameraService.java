@@ -37,9 +37,6 @@ public class CameraService extends MicroService {
 
             // Process pending events from the queue
             while (!pendingEvents.isEmpty()) {
-
-                System.out.println("TEST PENDING QUEUE");
-
                 DetectObjectsEvent event = pendingEvents.peek();
                 int detectionTime = event.getTime();
 
@@ -53,11 +50,8 @@ public class CameraService extends MicroService {
                 }
             }
 
-            System.out.println("TETETETEST@@@@@@@@@@@@@@@@@@@@@@@2");
-
             // Ensure the service processes new detections only once per tick
             if (currentTick > lastProcessedTick) {
-                System.out.println("TETETETEST!!!!!!!!!!!!!!!!!!!!1");
                 StampedDetectedObjects detectedObjects = camera.getDetectedObjectsAt(currentTick);
 
                 if (detectedObjects != null) {
@@ -75,8 +69,6 @@ public class CameraService extends MicroService {
                         }
                     }
 
-                    System.out.println("TETETETEST^^^^^^^^^^^^^^^^^^^^^^^^^^1");
-
                     // Create a DetectObjectsEvent
                     DetectObjectsEvent event = new DetectObjectsEvent(detectedObjects);
 
@@ -84,7 +76,7 @@ public class CameraService extends MicroService {
                     if (camera.getFrequency() == 0) {
                         // Process immediately if frequency is 0
                         sendEvent(event);
-                        System.out.println("SENDING CAMERA EVENT - " + event.getTime());
+                        System.out.println(getName() + " sent DetectedObjectEvent");
                         statfolder.incrementDetectedObjects(event.getDetectedObjects().size());
                     } else {
                         // Add to the queue with the detection time

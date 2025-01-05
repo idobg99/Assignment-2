@@ -71,23 +71,6 @@ public class FusionSlamService extends MicroService {
             }
 
             for (TrackedObject trackedObject : trackedObjects) {
-                // Calculating the global coordinates
-                /*List<CloudPoint> coordinates = new ArrayList<>();
-
-                for (CloudPoint tobj : trackedObject.getCoordinates()) {
-                    //System.out.println("THIS ONE - x: " + tobj.getX() + " Y: " + tobj.getY());
-                    double xGlobal = currentPose.getX() + (tobj.getX() * Math.cos(Math.toRadians(currentPose.getYaw())) -
-                                                           tobj.getY() * Math.sin(Math.toRadians(currentPose.getYaw())));
-                    double yGlobal = currentPose.getY() + (tobj.getX() * Math.sin(Math.toRadians(currentPose.getYaw())) +
-                                                           tobj.getY() * Math.cos(Math.toRadians(currentPose.getYaw())));
-                    coordinates.add(new CloudPoint(xGlobal, yGlobal));
-
-                    //System.out.println("Object: " + trackedObject.getId() + " Local: (" + tobj.getX() + ", " + tobj.getY() + "), Pose: (" + currentPose.getX() + ", " + currentPose.getY() + ", " + currentPose.getYaw() + "), Global: (" + xGlobal + ", " + yGlobal + ")");
-                }
-
-                LandMark newLandmark = new LandMark(trackedObject.getId(),
-                                                    trackedObject.getDescription(),
-                                                    coordinates);*/
                 LandMark newLandmark = fusionSlam.calculteLandMark(trackedObject, currentPose);               
                 fusionSlam.insertLandmark(newLandmark);
                 this.numOfDetected++;
@@ -108,7 +91,7 @@ public class FusionSlamService extends MicroService {
         // Handle TickBroadcast
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
             // Perform periodic updates or maintenance tasks
-            System.out.println(getName() + " received tick: " + tickBroadcast.getTick() + "->" + this.numOfDetected);
+            System.out.println(getName() + " received tick: " + tickBroadcast.getTick());
 
             if (fusionSlam.getLastDetection() == this.numOfDetected) {
                 sendBroadcast(new TerminatedBroadcast());

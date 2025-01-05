@@ -36,9 +36,6 @@ public class GurionRockRunner {
      * @param args Command-line arguments. The first argument is expected to be the path to the configuration file.
      */
 
-    //pathes to insert input files:
-    ///usr/bin/env /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -cp /tmp/cp_46t2ak5l8nahg3aighn8giltk.jar bgu.spl.mics.application.GurionRockRunner /workspaces/Assignment-2/Skeleton/example_input/configuration_file.json
-    ///usr/bin/env /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -cp /tmp/cp_46t2ak5l8nahg3aighn8giltk.jar bgu.spl.mics.application.GurionRockRunner /workspaces/Assignment-2/Skeleton/example_input_2/configuration_file.json
     public static void main(String[] args) {
         String config_file = args[0];  
         File inputfile = new File(config_file);
@@ -51,21 +48,33 @@ public class GurionRockRunner {
 
             // Initializing the LiDAR DB:   
             String LidarDataPath = rootNode.path("LiDarWorkers").path("lidars_data_path").asText();
+
+            // Parsing correctly camera path
+            if (LidarDataPath.startsWith("./")) {
+                LidarDataPath = LidarDataPath.replaceFirst("\\./", "/");
+            }
+
             LiDarDataBase lidarDataBase = LiDarDataBase.getInstance();
-            lidarDataBase.insertWithFile(directory+ "/lidar_data.json");  //change it to LidarDataPath if the path wil be correct.          
-            
+            lidarDataBase.insertWithFile(directory + "" + LidarDataPath);  
+            //lidarDataBase.insertWithFile(directory+ "/lidar_data.json");  //change it to LidarDataPath if the path wil be correct.            
+
             // Parse Cameras:
             JsonNode cameraConfig = rootNode.path("Cameras").path("CamerasConfigurations");
             String cameraDataPath = rootNode.path("Cameras").path("camera_datas_path").asText();
-            JsonNode cameraData = mapper.readTree(new File(directory+ "/camera_data.json")); //change it to cameraDataPath if the path wil be correct.                     
+
+            // Parsing correctly camera path
+            if (cameraDataPath.startsWith("./")) {
+                cameraDataPath = cameraDataPath.replaceFirst("\\./", "/");
+            }
+
+            //JsonNode cameraData = mapper.readTree(new File(directory+ "/camera_data.json")); //change it to cameraDataPath if the path wil be correct.                     
+            JsonNode cameraData = mapper.readTree(new File(directory + "" + cameraDataPath)); 
 
             for (JsonNode config : cameraConfig) {
                 int id = config.get("id").asInt();
                 int frequency = config.get("frequency").asInt();
                 String cameraKey = config.get("camera_key").asText();
                 //String cameraKey = config.get("camera_datas_path").asText();
-
-                //System.out.println("CAMERAKEY: " + cameraKey);
 
                 JsonNode detectedData = cameraData.path(cameraKey); // List of the stamped objects
                 Camera camera = new Camera(id, frequency,detectedData);
@@ -90,10 +99,17 @@ public class GurionRockRunner {
             // initializing Poses and fusionSlam::
             GPSIMU gps = GPSIMU.getInstance();
             String PoseDataPath = rootNode.path("poseJsonFile").asText(); 
-            gps.Update(directory+ "/pose_data.json");  //change it to PoseDataPath if the path wil be correct.
+
+            // Parsing correctly camera path
+            if (PoseDataPath.startsWith("./")) {
+                PoseDataPath = PoseDataPath.replaceFirst("\\./", "/");
+            }
+
+            //gps.Update(directory+ "/pose_data.json");  //change it to PoseDataPath if the path wil be correct.
+            gps.Update(directory + "" + PoseDataPath);  
             threadPool.submit(new PoseService(gps));
 
-            System.out.println("STARTO********************** " + Camera.TOTAL_DETECTED_OBJECTS);
+            System.out.println("Simulation start (expected objects: " + Camera.TOTAL_DETECTED_OBJECTS + ")");
 
             FusionSlam.getInstance().setLastDetection(Camera.TOTAL_DETECTED_OBJECTS);
 

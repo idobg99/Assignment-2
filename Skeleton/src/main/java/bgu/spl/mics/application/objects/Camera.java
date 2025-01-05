@@ -77,7 +77,6 @@ public class Camera {
      */
     public StampedDetectedObjects getDetectedObjectsAt(int currentTime) {
         this.lastObjects = detectedObjectsMap.get(currentTime);
-        System.out.println("GOT HERE $$$$$$$$$$$$$$$$$ - " + this.lastObjects + "time: " + currentTime);
         return this.lastObjects;
     }
 

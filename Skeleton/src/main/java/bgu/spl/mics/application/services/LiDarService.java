@@ -44,13 +44,9 @@ public class LiDarService extends MicroService {
     @Override
     protected void initialize() {
 
-        System.out.println("LIDAR INIT &&&&$^#$%@#$@#$#%^#$%&$%&");
-
         // Handle TickBroadcast to process pending tracked events
         subscribeBroadcast(TickBroadcast.class, tick -> {
             int currentTick = tick.getTick();
-
-            System.out.println("LIDAR TESTING" + currentTick);
 
             // Process pending tracked events
             while (!pendingTrackedEvents.isEmpty()) {
@@ -59,8 +55,6 @@ public class LiDarService extends MicroService {
 
                 // Check if the event is ready to be processed
                 if (currentTick - lidarWorker.getFrequency() >= detectionTime) {
-
-                    System.out.println("LIDAR TESTING &&&&&&&&&&&&&&&&&&&& " + currentTick);
                     StampedDetectedObjects detectedObjects = event.getStampedDetectedObjects();
                     List<TrackedObject> trackedObjects = new ArrayList<>();
                     for (DetectedObject obj : detectedObjects.getDetectedObjects()) {
@@ -100,7 +94,6 @@ public class LiDarService extends MicroService {
 
         // Handle DetectObjectsEvent
         subscribeEvent(DetectObjectsEvent.class, event -> {
-            System.out.println("LIDAR GOT DET EVENT ************* " + event.getTime());
             pendingTrackedEvents.offer(event);
         });
         // Handle TerminatedBroadcast
