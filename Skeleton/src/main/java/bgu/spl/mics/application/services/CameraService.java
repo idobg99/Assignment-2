@@ -53,8 +53,11 @@ public class CameraService extends MicroService {
                 }
             }
 
+            System.out.println("TETETETEST@@@@@@@@@@@@@@@@@@@@@@@2");
+
             // Ensure the service processes new detections only once per tick
             if (currentTick > lastProcessedTick) {
+                System.out.println("TETETETEST!!!!!!!!!!!!!!!!!!!!1");
                 StampedDetectedObjects detectedObjects = camera.getDetectedObjectsAt(currentTick);
 
                 if (detectedObjects != null) {
