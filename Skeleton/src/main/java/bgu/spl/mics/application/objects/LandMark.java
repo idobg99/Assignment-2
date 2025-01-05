@@ -17,19 +17,19 @@ public class LandMark {
         this.coordinates = new ArrayList<>(coordinates);
     }
 
-    public String getId() {
+    public String getId() { // get ID
         return id;
     }
 
-    public String getDescription() {
+    public String getDescription() { // get Description
         return description;
     }
 
-    public void setCoordinates(List<CloudPoint> coordinates) {
+    public void setCoordinates(List<CloudPoint> coordinates) {// set Coordinates
         this.coordinates = coordinates;
     }
 
-    public List<CloudPoint> getCoordinates() {
+    public List<CloudPoint> getCoordinates() { // get Coordinates
         return coordinates;
     }
 }

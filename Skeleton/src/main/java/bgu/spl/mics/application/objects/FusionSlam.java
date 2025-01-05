@@ -129,6 +129,7 @@ public class FusionSlam {
         }
     }
 
+    // Get the last pose registered
     public Pose getCurrentPose() {
         lock.readLock().lock();
         try {
@@ -139,6 +140,7 @@ public class FusionSlam {
         }
     }
 
+    // Get the pose at a specified time
     public Pose getPoseAt(int time) {
         lock.readLock().lock();
         try {
@@ -164,13 +166,17 @@ public class FusionSlam {
         }
     }
 
+    // Set LastDetection
     public void setLastDetection(int num) {
         this.lastDetection = num;
     }
 
+    // Get LastDetection
     public int getLastDetection() {
         return this.lastDetection;
     }
+
+    // Calculate the Landmart coordinates
     public LandMark calculteLandMark(TrackedObject trackedObject, Pose currentPose) {    
         if (currentPose == null) {
                 return null; }       

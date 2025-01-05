@@ -21,14 +21,12 @@
 /mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/application/services/CameraService.java
 /mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/example/services/ExampleBroadcastListenerService.java
 /mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/application/messages/TrackedObjectsEvent.java
-/mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/application/objects/LidarsConfig.java
 /mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/Future.java
 /mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/Event.java
 /mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/application/messages/DetectObjectsEvent.java
 /mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/Callback.java
 /mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/example/ExampleManager.java
 /mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/application/objects/LiDarDataBase.java
-/mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/application/objects/Config.java
 /mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/application/objects/STATUS.java
 /mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/application/objects/errorOutput.java
 /mnt/c/Users/idobe/ass2/Assignment-2/Skeleton/src/main/java/bgu/spl/mics/MessageBusImpl.java

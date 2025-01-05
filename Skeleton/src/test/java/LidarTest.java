@@ -8,14 +8,14 @@ class LidarTest {
 
     private LiDarWorkerTracker tracker;
     private LiDarDataBase LidarDB;
-    private StatisticalFolder StatisticalFolder;
+    //private StatisticalFolder StatlFolder;
 
     @BeforeEach
     void setUp() {
         //MockitoAnnotations.openMocks(this);
         tracker = new LiDarWorkerTracker(1, 2);       
         LidarDB = LiDarDataBase.getInstance();
-        StatisticalFolder = StatisticalFolder.getInstance();
+        //StatlFolder = StatisticalFolder.getInstance();
     }
 
     @Test

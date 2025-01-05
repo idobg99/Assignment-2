@@ -1,5 +1,4 @@
 bgu/spl/mics/application/objects/LiDarWorkerTracker.class
-bgu/spl/mics/application/objects/Config.class
 bgu/spl/mics/application/objects/CloudPoint.class
 bgu/spl/mics/application/objects/StampedCloudPoints.class
 bgu/spl/mics/example/ServiceCreator.class
@@ -18,7 +17,6 @@ bgu/spl/mics/application/objects/FusionSlam$1.class
 bgu/spl/mics/application/objects/GPSIMU.class
 bgu/spl/mics/application/objects/LandMark.class
 bgu/spl/mics/Callback.class
-bgu/spl/mics/application/objects/LidarsConfig.class
 bgu/spl/mics/application/services/CameraService.class
 bgu/spl/mics/application/objects/StatisticalFolder$1.class
 bgu/spl/mics/application/messages/TrackedObjectsEvent.class
