@@ -53,5 +53,6 @@ bgu/spl/mics/application/objects/GPSIMU$1.class
 bgu/spl/mics/application/services/TimeService.class
 bgu/spl/mics/example/messages/ExampleBroadcast.class
 bgu/spl/mics/application/objects/LiDarDataBase$1.class
+bgu/spl/mics/application/services/testService.class
 bgu/spl/mics/application/objects/CamerasConfig.class
 bgu/spl/mics/example/services/ExampleBroadcastListenerService.class

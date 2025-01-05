@@ -15,6 +15,10 @@ public class testEvent implements Event<String> {
         this.string = "";
     }
 
+    public testEvent(String string) {
+        this.string = string;
+    }
+
     @Override
     public String toString() {
         return "PoseEvent{" +
