@@ -75,6 +75,8 @@ public class CameraService extends MicroService {
                         }
                     }
 
+                    System.out.println("TETETETEST^^^^^^^^^^^^^^^^^^^^^^^^^^1");
+
                     // Create a DetectObjectsEvent
                     DetectObjectsEvent event = new DetectObjectsEvent(detectedObjects);
 
@@ -82,6 +84,7 @@ public class CameraService extends MicroService {
                     if (camera.getFrequency() == 0) {
                         // Process immediately if frequency is 0
                         sendEvent(event);
+                        System.out.println("SENDING CAMERA EVENT - " + event.getTime());
                         statfolder.incrementDetectedObjects(event.getDetectedObjects().size());
                     } else {
                         // Add to the queue with the detection time
