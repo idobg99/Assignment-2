@@ -43,6 +43,9 @@ public class LiDarService extends MicroService {
      */
     @Override
     protected void initialize() {
+
+        System.out.println("LIDAR INIT &&&&$^#$%@#$@#$#%^#$%&$%&");
+
         // Handle TickBroadcast to process pending tracked events
         subscribeBroadcast(TickBroadcast.class, tick -> {
             int currentTick = tick.getTick();

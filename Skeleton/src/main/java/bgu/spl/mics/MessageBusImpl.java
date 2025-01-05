@@ -63,6 +63,7 @@ public class MessageBusImpl implements MessageBus {
 		CopyOnWriteArrayList<MicroService> subscribers = broadcastSubscribers.get(b.getClass());
         if (subscribers != null) {
             for (MicroService m : subscribers) {
+                System.out.println("SENDING BROADCAST - " + m.getName() + " " + b.getClass());
                 BlockingQueue<Message> queue = microServiceQueues.get(m);
                 if (queue != null) {
                     queue.offer(b);
@@ -103,7 +104,7 @@ public class MessageBusImpl implements MessageBus {
         try {
             microServiceQueues.remove(m);
             eventSubscribers.values().forEach(queue -> queue.remove(m));
-            broadcastSubscribers.values().forEach(list -> list.remove(m)); ///////////////////////////////////////
+            broadcastSubscribers.values().forEach(list -> list.remove(m)); 
         } finally {
             lock.writeLock().unlock();
         }
